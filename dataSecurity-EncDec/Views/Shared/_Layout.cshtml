@@ -1,0 +1,243 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SecurePortal — @ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f1117;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: #161b27;
+            border-bottom: 1px solid #2d3448;
+            padding: 0 2rem;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #38bdf8;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .topbar-brand span {
+            width: 28px;
+            height: 28px;
+            background: #38bdf8;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f1117;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .topbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            list-style: none;
+        }
+
+        .topbar-nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: all 0.15s;
+        }
+
+        .topbar-nav a:hover { background: #1e2535; color: #e2e8f0; }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-pill {
+            background: #1e2535;
+            border: 1px solid #2d3448;
+            border-radius: 20px;
+            padding: 5px 14px 5px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+        }
+
+        .user-avatar {
+            width: 26px;
+            height: 26px;
+            background: #0ea5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid #2d3448;
+            color: #94a3b8;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-ghost:hover { border-color: #38bdf8; color: #38bdf8; }
+
+        .btn-teal {
+            background: #0ea5e9;
+            border: none;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+
+        .btn-teal:hover { background: #0284c7; }
+
+        .dropdown { position: relative; }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: #161b27;
+            border: 1px solid #2d3448;
+            border-radius: 8px;
+            min-width: 180px;
+            overflow: hidden;
+            z-index: 200;
+        }
+
+        .dropdown:hover .dropdown-menu { display: block; }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 10px 16px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: background 0.1s;
+        }
+
+        .dropdown-menu a:hover { background: #1e2535; }
+
+        .dropdown-menu a.danger { color: #f87171; }
+
+        .page-content { flex: 1; }
+
+        .alert-bar {
+            padding: 10px 2rem;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-bar.success { background: #052e16; color: #4ade80; border-bottom: 1px solid #166534; }
+        .alert-bar.error   { background: #2d0a0a; color: #f87171; border-bottom: 1px solid #7f1d1d; }
+
+        footer {
+            background: #161b27;
+            border-top: 1px solid #2d3448;
+            padding: 16px 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+
+<header class="topbar">
+    <a class="topbar-brand" asp-controller="Home" asp-action="Index">
+        <span>SP</span>
+        SecurePortal
+    </a>
+
+    <ul class="topbar-nav">
+        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+        @if (Context.Session.GetString("UserEmail") != null)
+        {
+            <li><a asp-controller="Crypto" asp-action="Index">Encrypt / Decrypt</a></li>
+        }
+    </ul>
+
+    <div class="topbar-right">
+        @if (Context.Session.GetString("UserEmail") != null)
+        {
+            <div class="dropdown">
+                <div class="user-pill" style="cursor:pointer;">
+                    <div class="user-avatar">
+                        @(Context.Session.GetString("UserName")?[0].ToString().ToUpper() ?? "U")
+                    </div>
+                    @Context.Session.GetString("UserName")
+                </div>
+                <div class="dropdown-menu">
+                    <a asp-controller="Account" asp-action="ChangePassword">Change password</a>
+                    <a asp-controller="Account" asp-action="Logout" class="danger">Sign out</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login" class="btn-ghost">Sign in</a>
+            <a asp-controller="Account" asp-action="Register" class="btn-teal">Register</a>
+        }
+    </div>
+</header>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-bar success">✓ @TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert-bar error">✕ @TempData["Error"]</div>
+}
+
+<main class="page-content">
+    @RenderBody()
+</main>
+
+<footer>© 2025 SecurePortal. All rights reserved.</footer>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

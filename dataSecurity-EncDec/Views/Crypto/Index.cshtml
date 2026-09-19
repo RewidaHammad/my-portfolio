@@ -1,0 +1,230 @@
+﻿@model CryptoViewModel
+@{ ViewData["Title"] = "Encrypt / Decrypt"; }
+
+<style>
+    .crypto-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+    }
+
+    .page-header { margin-bottom: 2.5rem; }
+
+    .page-header h1 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: #f1f5f9;
+        margin-bottom: 6px;
+    }
+
+    .page-header p { font-size: 0.9rem; color: #64748b; }
+
+    .tag {
+        display: inline-block;
+        background: #0c2a3d;
+        color: #38bdf8;
+        border: 1px solid #0369a1;
+        border-radius: 4px;
+        font-size: 0.72rem;
+        padding: 2px 8px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+
+    .panels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: #2d3448;
+        border: 1px solid #2d3448;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .panel {
+        background: #161b27;
+        padding: 2rem;
+    }
+
+    .panel h3 {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #e2e8f0;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .panel-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+    }
+
+    .icon-encrypt { background: #0c2a3d; color: #38bdf8; }
+    .icon-decrypt { background: #052e16; color: #4ade80; }
+
+    .field { margin-bottom: 1.25rem; }
+
+    .field label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #64748b;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .field textarea, .field input {
+        width: 100%;
+        background: #0f1117;
+        border: 1px solid #2d3448;
+        border-radius: 7px;
+        padding: 10px 14px;
+        color: #e2e8f0;
+        font-size: 0.875rem;
+        outline: none;
+        resize: vertical;
+        transition: border-color 0.15s;
+        font-family: inherit;
+    }
+
+    .field textarea:focus, .field input:focus { border-color: #0ea5e9; }
+
+    .field textarea.mono { font-family: 'Courier New', monospace; font-size: 0.8rem; }
+
+    .btn-encrypt {
+        width: 100%;
+        background: #0ea5e9;
+        color: white;
+        border: none;
+        border-radius: 7px;
+        padding: 10px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+
+    .btn-encrypt:hover { background: #0284c7; }
+
+    .btn-decrypt {
+        width: 100%;
+        background: #16a34a;
+        color: white;
+        border: none;
+        border-radius: 7px;
+        padding: 10px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+
+    .btn-decrypt:hover { background: #15803d; }
+
+    .result-box {
+        margin-top: 1.25rem;
+        background: #0f1117;
+        border: 1px solid #2d3448;
+        border-radius: 7px;
+        overflow: hidden;
+    }
+
+    .result-label {
+        background: #1e2535;
+        padding: 6px 14px;
+        font-size: 0.72rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .result-label.blue { color: #38bdf8; }
+    .result-label.green { color: #4ade80; }
+
+    .result-value {
+        padding: 12px 14px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.78rem;
+        color: #94a3b8;
+        word-break: break-all;
+        line-height: 1.6;
+    }
+
+    @@media (max-width: 640px) {
+        .panels { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="crypto-wrap">
+    <div class="page-header">
+        <h1>Encrypt / Decrypt <span class="tag">TripleDES</span></h1>
+        @* <p>Enter any text to encrypt it. Copy the key to decrypt it later.</p> *@
+    </div>
+
+    <div class="panels">
+        <div class="panel">
+            <h3>
+                <span class="panel-icon icon-encrypt">&#128274;</span>
+                Encrypt text
+            </h3>
+
+            <form asp-action="Encrypt" method="post">
+                <div class="field">
+                    <label>Plain text</label>
+                    <textarea name="PlainText" rows="5" placeholder="Type the text you want to encrypt...">@Model.PlainText</textarea>
+                </div>
+                <button type="submit" class="btn-encrypt">Encrypt</button>
+            </form>
+
+            @if (!string.IsNullOrEmpty(Model.EncryptedText) && string.IsNullOrEmpty(Model.DecryptedResult))
+            {
+                <div class="result-box" style="margin-top:1.25rem;">
+                    <div class="result-label blue">Encrypted output</div>
+                    <div class="result-value">@Model.EncryptedText</div>
+                </div>
+                <div class="result-box" style="margin-top:8px;">
+                    <div class="result-label blue">Secret key</div>
+                    <div class="result-value">@Model.SecretKey</div>
+                </div>
+            }
+        </div>
+
+        <div class="panel">
+            <h3>
+                <span class="panel-icon icon-decrypt">&#128275;</span>
+                Decrypt text
+            </h3>
+
+            <form asp-action="Decrypt" method="post">
+                <div class="field">
+                    <label>Cipher text</label>
+                    <textarea name="EncryptedText" rows="3" class="mono" placeholder="Paste encrypted text here...">@Model.EncryptedText</textarea>
+                </div>
+                <div class="field">
+                    <label>Secret key</label>
+                    <textarea name="SecretKey" rows="2" class="mono" placeholder="Paste the key here">@Model.SecretKey</textarea>
+                </div>
+                <button type="submit" class="btn-decrypt">Decrypt</button>
+            </form>
+
+            @if (!string.IsNullOrEmpty(Model.DecryptedResult))
+            {
+                <div class="result-box" style="margin-top:1.25rem;">
+                    <div class="result-label green">Decrypted result</div>
+                    <div class="result-value" style="color:#4ade80;">@Model.DecryptedResult</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

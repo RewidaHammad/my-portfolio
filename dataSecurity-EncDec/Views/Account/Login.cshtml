@@ -1,0 +1,130 @@
+﻿@model LoginViewModel
+@{ ViewData["Title"] = "Sign in"; }
+
+<style>
+    .auth-wrap {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .auth-box {
+        width: 100%;
+        max-width: 420px;
+        background: #161b27;
+        border: 1px solid #2d3448;
+        border-radius: 12px;
+        padding: 2.5rem;
+    }
+
+    .auth-box h2 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #f1f5f9;
+        margin-bottom: 6px;
+    }
+
+    .auth-box .sub {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 2rem;
+    }
+
+    .field { margin-bottom: 1.25rem; }
+
+    .field label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #94a3b8;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .field input {
+        width: 100%;
+        background: #0f1117;
+        border: 1px solid #2d3448;
+        border-radius: 7px;
+        padding: 10px 14px;
+        color: #e2e8f0;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+
+    .field input:focus { border-color: #0ea5e9; }
+
+    .field-error {
+        font-size: 0.78rem;
+        color: #f87171;
+        margin-top: 4px;
+    }
+
+    .error-box {
+        background: #2d0a0a;
+        border: 1px solid #7f1d1d;
+        border-radius: 7px;
+        padding: 10px 14px;
+        font-size: 0.85rem;
+        color: #f87171;
+        margin-bottom: 1.25rem;
+    }
+
+    .btn-submit {
+        width: 100%;
+        background: #0ea5e9;
+        color: white;
+        border: none;
+        border-radius: 7px;
+        padding: 11px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+
+    .btn-submit:hover { background: #0284c7; }
+
+    .auth-links {
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.82rem;
+    }
+
+    .auth-links a { color: #38bdf8; text-decoration: none; }
+    .auth-links a:hover { text-decoration: underline; }
+</style>
+
+<div class="auth-wrap">
+    <div class="auth-box">
+        <h2>Welcome back</h2>
+        <p class="sub">Sign in to your account to continue.</p>
+
+        <form asp-action="Login" method="post">
+            <div class="field">
+                <label>Email address</label>
+                <input asp-for="Email" placeholder="you@example.com" />
+                <div class="field-error"><span asp-validation-for="Email"></span></div>
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input asp-for="Password" type="password" placeholder="Your password" />
+                <div class="field-error"><span asp-validation-for="Password"></span></div>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="error-box"></div>
+
+            <button type="submit" class="btn-submit">Sign in</button>
+        </form>
+
+        <div class="auth-links">
+            <a asp-action="ResetPassword">Forgot password?</a>
+            <a asp-action="Register">Create account</a>
+        </div>
+    </div>
+</div>
