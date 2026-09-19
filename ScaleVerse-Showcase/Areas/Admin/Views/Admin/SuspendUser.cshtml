@@ -1,0 +1,450 @@
+﻿@* @model ScalaVerse.ViewModel.Admin_VM.SuspendUserViewModel
+@{
+    ViewData["Title"] = "Suspend User";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-ban"></i> Suspend User
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Warning:</strong> You are about to suspend this user.
+                    </div>
+
+                    <!-- User Details (Display Only) -->
+                    <div class="card mb-3 bg-light">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">User Information</h6>
+                            <p class="mb-1">
+                                <i class="bi bi-person"></i> <strong>Name:</strong> @Model.UserName
+                            </p>
+                            <p class="mb-0">
+                                <i class="bi bi-envelope"></i> <strong>Email:</strong> @Model.Email
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Suspension Form -->
+                   <form method="post" asp-area="Admin" asp-controller="Admin" asp-action="SuspendUser">
+    @Html.AntiForgeryToken()
+    
+    <!-- Hidden UserId -->
+    <input type="hidden" name="userId" value="@Model.UserId" />
+    
+    <!-- User info display -->
+    <div class="card mb-3 bg-light">
+        <div class="card-body">
+            <h6 class="fw-bold mb-3">User Information</h6>
+            <p class="mb-1">
+                <i class="bi bi-person"></i> <strong>Name:</strong> @Model.UserName
+            </p>
+            <p class="mb-0">
+                <i class="bi bi-envelope"></i> <strong>Email:</strong> @Model.Email
+            </p>
+        </div>
+    </div>
+
+    <!-- Suspension Reason -->
+    <div class="mb-3">
+        <label for="suspensionReason" class="form-label fw-bold">
+            <i class="bi bi-chat-left-text"></i> Suspension Reason *
+        </label>
+        <textarea id="suspensionReason" name="suspensionReason" class="form-control" rows="4"
+                  placeholder="Enter the reason for suspension"
+                  required></textarea>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <a href="@Url.Action("Users", "Admin", new { area = "Admin" })" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Cancel
+        </a>
+        <button type="submit" class="btn btn-warning text-dark">
+            <i class="bi bi-ban"></i> Suspend User
+        </button>
+    </div>
+</form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} *@
+
+
+
+@model ScalaVerse.ViewModel.Admin_VM.SuspendUserViewModel
+@{
+    ViewData["Title"] = "Suspend User";
+}
+
+<style>
+    :root {
+        --navy: #0A0E1A;
+        --purple: #7C3AED;
+        --purple-2: #6D28D9;
+        --purple-5: #EDE9FE;
+        --white: #FFFFFF;
+        --off: #F9FAFB;
+        --border: #E5E7EB;
+        --text: #0F172A;
+        --text-2: #374151;
+        --muted: #6B7280;
+        --amber: #D97706;
+        --amber-bg: #FFFBEB;
+        --amber-dark: #92400E;
+        --f-display: 'Plus Jakarta Sans', sans-serif;
+        --f-body: 'Inter', sans-serif;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --radius: 14px;
+        --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    .page-wrap {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .susp-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        animation: fadeUp 0.4s var(--ease) both;
+    }
+
+    .susp-head {
+        background: var(--navy);
+        padding: 22px 26px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .susp-head::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -30px;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(217,119,6,0.25) 0%, transparent 65%);
+        }
+
+    .susp-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        flex-shrink: 0;
+        background: rgba(217,119,6,0.2);
+        border: 1px solid rgba(217,119,6,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 2;
+    }
+
+        .susp-icon i {
+            font-size: 19px;
+            color: #FCD34D;
+        }
+
+    .susp-title {
+        font-family: var(--f-display);
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.01em;
+        position: relative;
+        z-index: 2;
+    }
+
+    .susp-sub {
+        font-size: 0.74rem;
+        color: rgba(255,255,255,0.4);
+        margin-top: 2px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .susp-body {
+        padding: 26px;
+    }
+
+    .alert-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        background: var(--amber-bg);
+        border: 1px solid rgba(217,119,6,0.2);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 22px;
+    }
+
+        .alert-box i {
+            font-size: 18px;
+            color: var(--amber);
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+    .alert-box-text {
+        font-size: 0.84rem;
+        color: var(--text-2);
+        line-height: 1.55;
+    }
+
+        .alert-box-text strong {
+            color: var(--amber-dark);
+        }
+
+    .user-card {
+        background: var(--off);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px 20px;
+        margin-bottom: 22px;
+    }
+
+    .user-card-title {
+        font-family: var(--f-display);
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+        .user-card-title i {
+            color: var(--amber);
+            font-size: 15px;
+        }
+
+    .user-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 0;
+        font-size: 0.85rem;
+        color: var(--text-2);
+    }
+
+        .user-row i {
+            width: 16px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .user-row strong {
+            color: var(--text);
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+    .field {
+        margin-bottom: 6px;
+    }
+
+    .field-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: var(--text-2);
+        margin-bottom: 8px;
+    }
+
+    .field-textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: var(--f-body);
+        font-size: 0.88rem;
+        color: var(--text);
+        background: var(--off);
+        outline: none;
+        transition: all 0.18s;
+        resize: vertical;
+        min-height: 110px;
+    }
+
+        .field-textarea:focus {
+            border-color: var(--amber);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(217,119,6,0.1);
+        }
+
+        .field-textarea::placeholder {
+            color: #C4C9D4;
+        }
+
+    .field-hint {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .field-error {
+        font-size: 0.74rem;
+        color: #DC2626;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 22px;
+    }
+
+    .btn-cancel {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        font-family: var(--f-body);
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text-2);
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        padding: 12px 20px;
+        border-radius: 11px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-cancel:hover {
+            border-color: var(--text-2);
+            background: var(--off);
+        }
+
+    .btn-suspend {
+        flex: 1.4;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        font-family: var(--f-body);
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #fff;
+        background: var(--amber);
+        border: none;
+        padding: 12px 20px;
+        border-radius: 11px;
+        cursor: pointer;
+        transition: all 0.2s var(--ease);
+        box-shadow: 0 4px 14px rgba(217,119,6,0.3);
+    }
+
+        .btn-suspend:hover {
+            background: var(--amber-dark);
+            transform: translateY(-1px);
+        }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .susp-head, .susp-body {
+            padding: 18px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="page-wrap">
+    <div class="susp-card">
+
+        <div class="susp-head">
+            <div class="susp-icon"><i class="bi bi-slash-circle-fill"></i></div>
+            <div>
+                <div class="susp-title">Suspend User</div>
+                <div class="susp-sub">Restrict account access temporarily</div>
+            </div>
+        </div>
+
+        <div class="susp-body">
+
+            <div class="alert-box">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div class="alert-box-text">
+                    <strong>Warning:</strong> You are about to suspend this user. They will still be able to view the platform but will not be able to perform any actions.
+                </div>
+            </div>
+
+            <div class="user-card">
+                <div class="user-card-title"><i class="bi bi-person-fill"></i> User Information</div>
+                <div class="user-row"><i class="bi bi-person"></i> <strong>Name:</strong> @Model.UserName</div>
+                <div class="user-row"><i class="bi bi-envelope"></i> <strong>Email:</strong> @Model.Email</div>
+            </div>
+
+            <form method="post" asp-area="Admin" asp-controller="Admin" asp-action="SuspendUser">
+                @Html.AntiForgeryToken()
+    
+                <input type="hidden" name="userId" value="@Model.UserId" />
+
+                <div class="field">
+                    <label for="suspensionReason" class="field-label">
+                        <i class="bi bi-chat-left-text-fill"></i> Suspension Reason
+                    </label>
+                    <textarea id="suspensionReason" name="suspensionReason" class="field-textarea"
+                              placeholder="Enter the reason for suspension (e.g., Spam, Policy violation, etc.)" required></textarea>
+                    <div class="field-hint"><i class="bi bi-eye-fill"></i> This reason will be visible to the user</div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="@Url.Action("Users", "Admin", new { area = "Admin" })" class="btn-cancel">
+                        <i class="bi bi-arrow-left"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn-suspend">
+                        <i class="bi bi-slash-circle-fill"></i> Suspend User
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

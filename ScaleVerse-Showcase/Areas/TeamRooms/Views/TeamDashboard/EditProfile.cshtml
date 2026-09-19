@@ -1,0 +1,452 @@
+﻿
+@model ScalaVerse.ViewModel.TeamLeader_Dashboard_VM.EditTeamLeaderProfileViewModel
+@{
+    ViewData["Title"] = "Edit Profile";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<style>
+    :root {
+        --navy: #0A0E1A;
+        --purple: #7C3AED;
+        --purple-2: #6D28D9;
+        --purple-3: #8B5CF6;
+        --purple-4: #A78BFA;
+        --purple-5: #EDE9FE;
+        --white: #FFFFFF;
+        --off: #F9FAFB;
+        --border: #E5E7EB;
+        --border-2: #F3F4F6;
+        --text: #0F172A;
+        --text-2: #374151;
+        --muted: #6B7280;
+        --green: #059669;
+        --green-bg: #ECFDF5;
+        --red: #DC2626;
+        --f-display: 'Plus Jakarta Sans',sans-serif;
+        --f-body: 'Inter',sans-serif;
+        --ease: cubic-bezier(0.16,1,0.3,1);
+        --radius: 12px;
+        --radius-lg: 16px;
+        --shadow: 0 1px 3px rgba(0,0,0,0.07),0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ep-layout {
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 20px;
+        align-items: start;
+    }
+
+    /* Hero */
+    .ep-hero {
+        background: var(--navy);
+        border-radius: var(--radius-lg);
+        padding: 24px 28px;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .ep-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 70% 80% at 100% 0%,rgba(124,58,237,0.18) 0%,transparent 60%);
+        }
+
+    .ep-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .ep-hero-title {
+        font-family: var(--f-display);
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.02em;
+    }
+
+    .ep-hero-sub {
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.4);
+        margin-top: 4px;
+    }
+
+    /* Form Card */
+    .ep-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        margin-bottom: 16px;
+    }
+
+        .ep-card:last-child {
+            margin-bottom: 0;
+        }
+
+    .ep-card-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border-2);
+        font-family: var(--f-display);
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+        .ep-card-head i {
+            color: var(--purple);
+            font-size: 15px;
+        }
+
+    .ep-card-body {
+        padding: 20px;
+    }
+
+    /* Form controls */
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+    .form-lbl {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 6px;
+    }
+
+        .form-lbl span {
+            color: var(--red);
+        }
+
+    .form-ctrl {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        background: var(--off);
+        color: var(--text);
+        font-family: var(--f-body);
+        font-size: 0.88rem;
+        font-weight: 500;
+        padding: 10px 14px;
+        outline: none;
+        transition: all 0.2s;
+        resize: none;
+    }
+
+        .form-ctrl:focus {
+            border-color: var(--purple);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.08);
+        }
+
+    .form-hint {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-top: 5px;
+    }
+
+    .form-error-msg {
+        font-size: 0.75rem;
+        color: var(--red);
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .validation-summary {
+        padding: 12px 16px;
+        background: #FEF2F2;
+        border: 1px solid rgba(220,38,38,0.2);
+        border-radius: 10px;
+        font-size: 0.82rem;
+        color: var(--red);
+        margin-bottom: 16px;
+    }
+
+    /* Action buttons */
+    .action-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 4px;
+    }
+
+    .btn-save {
+        flex: 1;
+        padding: 12px;
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-family: var(--f-body);
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s var(--ease);
+        box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+        .btn-save:hover {
+            background: var(--purple-2);
+            transform: translateY(-1px);
+        }
+
+    .btn-cancel {
+        padding: 12px 20px;
+        background: transparent;
+        color: var(--muted);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: var(--f-body);
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-cancel:hover {
+            border-color: var(--purple);
+            color: var(--purple);
+        }
+
+    /* Sidebar tips */
+    .tip-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        position: sticky;
+        top: 20px;
+    }
+
+    .tip-head {
+        background: linear-gradient(135deg,var(--navy),#1a1040);
+        padding: 16px 20px;
+    }
+
+    .tip-title {
+        font-family: var(--f-display);
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #fff;
+    }
+
+    .tip-sub {
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.4);
+        margin-top: 3px;
+    }
+
+    .tip-body {
+        padding: 16px;
+    }
+
+    .tip-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 14px;
+        font-size: 0.8rem;
+        color: var(--text-2);
+        line-height: 1.5;
+    }
+
+        .tip-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .tip-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: var(--purple-5);
+        color: var(--purple);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    @@media (max-width:900px) {
+        .ep-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .tip-card {
+            position: static;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width:600px) {
+        .ep-hero {
+            padding: 20px;
+        }
+
+        .action-row {
+            flex-direction: column;
+        }
+
+        .btn-cancel {
+            justify-content: center;
+        }
+    }
+</style>
+
+<!-- Hero -->
+<div class="ep-hero">
+    <div class="ep-hero-inner">
+        <div>
+            <div class="ep-hero-title">Edit Profile</div>
+            <div class="ep-hero-sub">Update your information to attract more clients</div>
+        </div>
+        <a href="@Url.Action("ViewProfile")" style="display:inline-flex;align-items:center;gap:6px;font-size:0.8rem;font-weight:600;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);padding:8px 14px;border-radius:9px;text-decoration:none;transition:all 0.2s;">
+            <i class="bi bi-arrow-left"></i> View Profile
+        </a>
+    </div>
+</div>
+
+<div class="ep-layout">
+    <div>
+        <form asp-action="EditProfile" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="All" class="validation-summary"></div>
+
+            <!-- Personal Info -->
+            <div class="ep-card">
+                <div class="ep-card-head"><i class="bi bi-person-fill"></i> Personal Information</div>
+                <div class="ep-card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-lbl">Full Name <span>*</span></label>
+                            <input asp-for="FullName" class="form-ctrl" placeholder="Your full name" />
+                            <span asp-validation-for="FullName" class="form-error-msg"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl">Email <span>*</span></label>
+                            <input asp-for="Email" class="form-ctrl" placeholder="your@email.com" />
+                            <span asp-validation-for="Email" class="form-error-msg"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-lbl">Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-ctrl" placeholder="+1 234 567 8900" />
+                        <span asp-validation-for="PhoneNumber" class="form-error-msg"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Info -->
+            <div class="ep-card">
+                <div class="ep-card-head"><i class="bi bi-briefcase-fill"></i> Professional Information</div>
+                <div class="ep-card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-lbl">Years of Experience <span>*</span></label>
+                            <input asp-for="YearsOfExperience" type="number" class="form-ctrl" placeholder="e.g. 5" min="0" max="50" />
+                            <span asp-validation-for="YearsOfExperience" class="form-error-msg"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl">Portfolio URL</label>
+                            <input asp-for="PortfolioUrl" class="form-ctrl" placeholder="https://yourportfolio.com" />
+                            <span asp-validation-for="PortfolioUrl" class="form-error-msg"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-lbl">Expertise Areas</label>
+                        <input asp-for="ExpertiseAreas" class="form-ctrl" placeholder="e.g. Web Development, Mobile Apps, UI/UX Design" />
+                        <div class="form-hint">Separate multiple areas with commas</div>
+                        <span asp-validation-for="ExpertiseAreas" class="form-error-msg"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bio -->
+            <div class="ep-card">
+                <div class="ep-card-head"><i class="bi bi-file-person-fill"></i> Bio</div>
+                <div class="ep-card-body">
+                    <div class="form-group">
+                        <label class="form-lbl">About You</label>
+                        <textarea asp-for="Bio" class="form-ctrl" rows="5"
+                                  placeholder="Tell clients about your background, what you love building, and what makes your team unique…"></textarea>
+                        <span asp-validation-for="Bio" class="form-error-msg"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-row">
+                <a href="@Url.Action("ViewProfile")" class="btn-cancel"><i class="bi bi-x-circle"></i> Cancel</a>
+                <button type="submit" class="btn-save"><i class="bi bi-check-circle-fill"></i> Save Changes</button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Sidebar Tips -->
+    <div>
+        <div class="tip-card">
+            <div class="tip-head">
+                <div class="tip-title">Profile Tips</div>
+                <div class="tip-sub">Stand out to more clients</div>
+            </div>
+            <div class="tip-body">
+                <div class="tip-item"><div class="tip-icon"><i class="bi bi-lightbulb-fill"></i></div><div>Write a bio that highlights your unique strengths and what makes your team different.</div></div>
+                <div class="tip-item"><div class="tip-icon"><i class="bi bi-tags-fill"></i></div><div>List all expertise areas — clients search by skill and specialty.</div></div>
+                <div class="tip-item"><div class="tip-icon"><i class="bi bi-link-45deg"></i></div><div>Add your portfolio URL to show past work and build client trust.</div></div>
+                <div class="tip-item"><div class="tip-icon"><i class="bi bi-patch-check-fill"></i></div><div>Complete profiles get 3x more views and inquiries.</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

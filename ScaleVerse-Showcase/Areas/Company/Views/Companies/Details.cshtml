@@ -1,0 +1,1696 @@
+﻿@using Scalaverse.Entitys.Models
+@model RegisteredCompany
+
+@{
+    ViewData["Title"] = Model.CompanyName + " — ScaleVerse";
+    var isClient = User.IsInRole("Client");
+    var isAuthenticated = User.Identity.IsAuthenticated;
+    var rating = Model.AverageRating ?? 0;
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* ═══════════════════════════════════════
+           SCALEVERSE DESIGN TOKENS
+        ═══════════════════════════════════════ */
+    :root {
+        --navy: #0A0E1A;
+        --navy-2: #111827;
+        --navy-3: #1E2740;
+        --purple: #7C3AED;
+        --purple-2: #6D28D9;
+        --purple-3: #8B5CF6;
+        --purple-glow: rgba(124,58,237,0.25);
+        --purple-soft: rgba(124,58,237,0.10);
+        --white: #FFFFFF;
+        --off: #F9FAFB;
+        --border: #E5E7EB;
+        --text: #111827;
+        --muted: #6B7280;
+        --emerald: #10B981;
+        --emerald-soft: rgba(16,185,129,0.10);
+        --sky: #0EA5E9;
+        --sky-soft: rgba(14,165,233,0.10);
+        --amber: #F59E0B;
+        --amber-soft: rgba(245,158,11,0.10);
+        --red: #EF4444;
+        --red-soft: rgba(239,68,68,0.08);
+        --f-display: 'Plus Jakarta Sans', sans-serif;
+        --f-body: 'Inter', sans-serif;
+        --ease: cubic-bezier(0.16,1,0.3,1);
+        --radius: 20px;
+        --shadow: 0 2px 8px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04);
+        --shadow-lg: 0 20px 60px rgba(0,0,0,0.10), 0 6px 20px rgba(0,0,0,0.06);
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .sv-detail {
+        font-family: var(--f-body);
+        color: var(--text);
+        background: var(--off);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+        background: var(--purple);
+        color: #fff;
+    }
+
+    /* ── Page Wrapper ── */
+    .dv-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 36px 32px 80px;
+    }
+
+    /* ── Breadcrumb ── */
+    .dv-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-bottom: 26px;
+        flex-wrap: wrap;
+    }
+
+        .dv-breadcrumb a {
+            color: var(--purple);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.15s;
+        }
+
+            .dv-breadcrumb a:hover {
+                opacity: 0.75;
+            }
+
+    .dv-breadcrumb-sep {
+        color: var(--border);
+    }
+
+    .dv-breadcrumb-home {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--purple);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        .dv-breadcrumb-home svg {
+            width: 12px;
+            height: 12px;
+            stroke: var(--purple);
+            fill: none;
+            stroke-width: 2;
+        }
+
+    /* ── Hero ── */
+    .dv-hero {
+        background: var(--navy);
+        border-radius: var(--radius);
+        padding: 48px 52px;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .dv-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 70% 60% at 10% -10%, rgba(124,58,237,0.4) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 90% 110%, rgba(14,165,233,0.15) 0%, transparent 55%);
+        }
+
+    .dv-hero-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse 90% 100% at 50% 50%, black 20%, transparent 80%);
+    }
+
+    .dv-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: flex-start;
+        gap: 28px;
+        flex-wrap: wrap;
+    }
+
+    .dv-hero-logo {
+        width: 88px;
+        height: 88px;
+        border-radius: 18px;
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.08);
+        border: 1.5px solid rgba(255,255,255,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--f-display);
+        font-size: 2rem;
+        font-weight: 800;
+        color: #fff;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+        .dv-hero-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .dv-hero-info {
+        flex: 1;
+        min-width: 260px;
+    }
+
+    .dv-hero-badges {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+
+    .dv-verified {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(245,158,11,0.15);
+        border: 1px solid rgba(245,158,11,0.3);
+        border-radius: 100px;
+        padding: 4px 12px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #FCD34D;
+        letter-spacing: 0.04em;
+    }
+
+        .dv-verified svg {
+            width: 11px;
+            height: 11px;
+            fill: #FCD34D;
+            stroke: none;
+        }
+
+    .dv-industry-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 100px;
+        padding: 4px 12px;
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.6);
+        font-weight: 600;
+    }
+
+        .dv-industry-tag svg {
+            width: 11px;
+            height: 11px;
+            stroke: rgba(255,255,255,0.5);
+            fill: none;
+            stroke-width: 2;
+        }
+
+    .dv-hero-name {
+        font-family: var(--f-display);
+        font-size: clamp(1.8rem,3vw,2.4rem);
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin-bottom: 12px;
+    }
+
+    .dv-hero-desc {
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.45);
+        line-height: 1.75;
+        max-width: 600px;
+    }
+
+    .dv-hero-rating {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .dv-stars {
+        display: flex;
+        gap: 2px;
+    }
+
+    .dv-star {
+        font-size: 13px;
+        color: var(--amber);
+    }
+
+        .dv-star.empty {
+            color: rgba(255,255,255,0.15);
+        }
+
+    .dv-rating-val {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #fff;
+    }
+
+    .dv-rating-cnt {
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.35);
+    }
+
+    /* ── Stats Strip ── */
+    .dv-stats {
+        display: flex;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        margin-bottom: 28px;
+    }
+
+    .dv-stat {
+        flex: 1;
+        padding: 20px 0;
+        text-align: center;
+        border-right: 1px solid var(--border);
+        position: relative;
+    }
+
+        .dv-stat:last-child {
+            border-right: none;
+        }
+
+    .dv-stat-val {
+        font-family: var(--f-display);
+        font-size: 1.6rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        color: var(--text);
+    }
+
+        .dv-stat-val span {
+            color: var(--purple-3);
+        }
+
+    .dv-stat-lbl {
+        font-size: 0.65rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-top: 4px;
+    }
+
+    /* ── Layout Grid ── */
+    .dv-grid {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 24px;
+        align-items: start;
+    }
+
+    /* ── Panel Card ── */
+    .dv-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        margin-bottom: 20px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+        .dv-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .dv-card:hover {
+            border-color: rgba(124,58,237,0.18);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        }
+
+    .dv-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--border);
+        background: var(--off);
+    }
+
+    .dv-card-title {
+        font-family: var(--f-display);
+        font-size: 0.9rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .dv-card-title-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: var(--purple-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .dv-card-title-icon svg {
+            width: 13px;
+            height: 13px;
+            stroke: var(--purple);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+    .dv-card-meta {
+        font-size: 0.75rem;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    .dv-card-body {
+        padding: 20px 24px;
+    }
+
+    /* ── Service Cards ── */
+    .dv-service {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: all 0.25s var(--ease);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .dv-service::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg,var(--purple),var(--purple-3));
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.3s var(--ease);
+        }
+
+        .dv-service:last-child {
+            margin-bottom: 0;
+        }
+
+        .dv-service:hover {
+            border-color: rgba(124,58,237,0.3);
+            background: var(--purple-soft);
+            transform: translateX(4px);
+        }
+
+            .dv-service:hover::before {
+                transform: scaleY(1);
+            }
+
+        .dv-service.selected {
+            border-color: var(--purple);
+            background: var(--purple-soft);
+            border-width: 1.5px;
+            transform: translateX(4px);
+        }
+
+            .dv-service.selected::before {
+                transform: scaleY(1);
+            }
+
+    .dv-svc-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 10px;
+    }
+
+    .dv-svc-name {
+        font-family: var(--f-display);
+        font-size: 0.95rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: var(--text);
+        margin-bottom: 4px;
+    }
+
+    .dv-svc-desc {
+        font-size: 0.8rem;
+        color: var(--muted);
+        line-height: 1.6;
+        margin-bottom: 10px;
+    }
+
+    .dv-svc-chips {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+    }
+
+    .dv-svc-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--off);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 0.7rem;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+        .dv-svc-chip svg {
+            width: 10px;
+            height: 10px;
+            stroke: var(--muted);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+    .dv-tier-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+
+    .badge-starter {
+        background: var(--emerald-soft);
+        color: #065F46;
+    }
+
+    .badge-pro {
+        background: var(--purple-soft);
+        color: var(--purple-2);
+    }
+
+    .badge-enterprise {
+        background: var(--amber-soft);
+        color: #92400E;
+    }
+
+    .dv-svc-price {
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .dv-svc-price-val {
+        font-family: var(--f-display);
+        font-size: 1.3rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--text);
+    }
+
+    .dv-svc-price-lbl {
+        font-size: 0.65rem;
+        color: var(--muted);
+        margin-top: 2px;
+    }
+
+    /* ── Reviews ── */
+    .dv-review {
+        padding: 18px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .dv-review:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .dv-review-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
+
+    .dv-reviewer {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .dv-review-date {
+        font-size: 0.72rem;
+        color: var(--muted);
+    }
+
+    .dv-review-stars {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 7px;
+    }
+
+    .dv-review-text {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.65;
+    }
+
+    .dv-empty {
+        text-align: center;
+        padding: 32px 16px;
+        color: var(--muted);
+    }
+
+        .dv-empty svg {
+            width: 32px;
+            height: 32px;
+            stroke: #D1D5DB;
+            fill: none;
+            stroke-width: 1.5;
+            display: block;
+            margin: 0 auto 12px;
+        }
+
+        .dv-empty p {
+            font-size: 0.85rem;
+        }
+
+    /* ── CTA Sidebar Card ── */
+    .dv-cta {
+        background: var(--navy);
+        border-radius: var(--radius);
+        padding: 28px 24px;
+        text-align: center;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .dv-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,237,0.5) 0%, transparent 60%);
+        }
+
+    .dv-cta-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: rgba(124,58,237,0.2);
+        border: 1px solid rgba(124,58,237,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        position: relative;
+        z-index: 2;
+    }
+
+        .dv-cta-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--purple-3);
+            fill: none;
+            stroke-width: 2;
+        }
+
+    .dv-cta h4 {
+        font-family: var(--f-display);
+        font-size: 1rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 6px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .dv-cta p {
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 18px;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Buttons */
+    .dv-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 11px 20px;
+        border-radius: 11px;
+        font-size: 0.875rem;
+        font-weight: 700;
+        font-family: var(--f-body);
+        cursor: pointer;
+        border: 1px solid transparent;
+        text-decoration: none;
+        transition: all 0.2s var(--ease);
+        white-space: nowrap;
+        width: 100%;
+    }
+
+        .dv-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+    .dv-btn-primary {
+        background: var(--purple);
+        color: #fff;
+        box-shadow: 0 6px 20px var(--purple-glow);
+        position: relative;
+        z-index: 2;
+    }
+
+        .dv-btn-primary svg {
+            stroke: #fff;
+        }
+
+        .dv-btn-primary:hover {
+            background: var(--purple-2);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 32px var(--purple-glow);
+        }
+
+    .dv-btn-outline {
+        background: transparent;
+        color: var(--text);
+        border-color: var(--border);
+    }
+
+        .dv-btn-outline svg {
+            stroke: var(--text);
+        }
+
+        .dv-btn-outline:hover {
+            border-color: var(--purple);
+            color: var(--purple);
+            background: var(--purple-soft);
+        }
+
+    .dv-btn-white {
+        background: rgba(255,255,255,0.12);
+        color: #fff;
+        border-color: rgba(255,255,255,0.2);
+        position: relative;
+        z-index: 2;
+    }
+
+        .dv-btn-white svg {
+            stroke: #fff;
+        }
+
+        .dv-btn-white:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+    .dv-btn:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    /* ── Info rows ── */
+    .dv-info-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.82rem;
+    }
+
+        .dv-info-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .dv-info-lbl {
+        color: var(--muted);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .dv-info-lbl svg {
+            width: 13px;
+            height: 13px;
+            stroke: var(--muted);
+            fill: none;
+            stroke-width: 2;
+        }
+
+    .dv-info-val {
+        font-weight: 700;
+        color: var(--text);
+        text-align: right;
+    }
+
+    .dv-info-link {
+        color: var(--purple);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .dv-info-link:hover {
+            text-decoration: underline;
+        }
+
+    /* ── Manager ── */
+    .dv-manager {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .dv-manager:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .dv-mgr-av {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--purple-soft), rgba(139,92,246,0.2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--f-display);
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--purple);
+    }
+
+    .dv-mgr-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .dv-mgr-pos {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-top: 2px;
+    }
+
+    .dv-mgr-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        background: var(--emerald-soft);
+        border-radius: 20px;
+        padding: 2px 7px;
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #065F46;
+        margin-left: 5px;
+    }
+
+    /* ── Scroll Reveal ── */
+    .rv {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s var(--ease),transform 0.6s var(--ease);
+    }
+
+        .rv.d1 {
+            transition-delay: 0.05s;
+        }
+
+        .rv.d2 {
+            transition-delay: 0.12s;
+        }
+
+        .rv.d3 {
+            transition-delay: 0.20s;
+        }
+
+        .rv.on {
+            opacity: 1;
+            transform: none;
+        }
+
+    /* ── Modal ── */
+    .sv-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(10,14,26,0.65);
+        backdrop-filter: blur(8px);
+        z-index: 999;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+
+        .sv-modal-overlay.open {
+            display: flex;
+        }
+
+    .sv-modal {
+        background: var(--white);
+        border-radius: 22px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 40px 100px rgba(0,0,0,0.25);
+        animation: modalIn 0.35s var(--ease) both;
+        overflow: hidden;
+    }
+
+    @@keyframes modalIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(24px) scale(0.97)
+    }
+
+    to {
+        opacity: 1;
+        transform: none
+    }
+
+    }
+
+    .sv-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 26px 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--off);
+    }
+
+    .sv-modal-title {
+        font-family: var(--f-display);
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+        .sv-modal-title svg {
+            width: 17px;
+            height: 17px;
+            stroke: var(--purple);
+            fill: none;
+            stroke-width: 2;
+        }
+
+    .sv-modal-close {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--off);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+    }
+
+        .sv-modal-close:hover {
+            border-color: var(--purple);
+            background: var(--purple-soft);
+        }
+
+        .sv-modal-close svg {
+            width: 13px;
+            height: 13px;
+            stroke: var(--muted);
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+        }
+
+    .sv-modal-body {
+        padding: 22px 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .sv-modal-footer {
+        padding: 14px 26px 20px;
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid var(--border);
+    }
+
+    .sv-field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .sv-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--muted);
+    }
+
+    .sv-input, .sv-textarea {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-family: var(--f-body);
+        font-size: 0.875rem;
+        color: var(--text);
+        background: var(--white);
+        outline: none;
+        width: 100%;
+        transition: border-color 0.2s,box-shadow 0.2s;
+    }
+
+        .sv-input:focus, .sv-textarea:focus {
+            border-color: var(--purple);
+            box-shadow: 0 0 0 3px var(--purple-soft);
+        }
+
+    .sv-textarea {
+        resize: vertical;
+        min-height: 86px;
+        line-height: 1.6;
+    }
+
+    .sv-hint {
+        font-size: 0.7rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 4px;
+    }
+
+        .sv-hint svg {
+            width: 11px;
+            height: 11px;
+            stroke: var(--muted);
+            fill: none;
+            stroke-width: 2;
+        }
+
+    .sv-svc-chip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--purple-soft);
+        border: 1px solid rgba(124,58,237,0.22);
+        border-radius: 10px;
+        padding: 11px 14px;
+    }
+
+    .sv-svc-chip-l {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .sv-svc-chip-l svg {
+            width: 13px;
+            height: 13px;
+            stroke: var(--purple);
+            fill: none;
+            stroke-width: 2;
+        }
+
+    .sv-svc-chip-name {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--purple-2);
+    }
+
+    .sv-svc-chip-price {
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--purple-2);
+    }
+
+    .sv-svc-clear {
+        font-size: 0.7rem;
+        color: var(--red);
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+
+        .sv-svc-clear:hover {
+            text-decoration: underline;
+        }
+
+    /* Toast */
+    .sv-toast {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 18px;
+        border-radius: 12px;
+        font-family: var(--f-body);
+        font-size: 0.875rem;
+        font-weight: 600;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+        max-width: 340px;
+        animation: toastIn 0.4s var(--ease) both;
+    }
+
+    @@keyframes toastIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(14px)
+    }
+
+    to {
+        opacity: 1;
+        transform: none
+    }
+
+    }
+
+    .sv-toast.success {
+        background: #ECFDF5;
+        border: 1px solid #BBF7D0;
+        color: #065F46;
+    }
+
+    .sv-toast.error {
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        color: #991B1B;
+    }
+
+    .sv-toast-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* ── Responsive ── */
+    @@media (max-width: 960px) {
+        .dv-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .dv-sidebar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .dv-cta {
+        grid-column: span 2;
+    }
+
+    }
+
+    @@media (max-width: 640px) {
+        .dv-wrap
+
+    {
+        padding: 20px 16px 60px;
+    }
+
+    .dv-hero {
+        padding: 32px 22px;
+    }
+
+    .dv-hero-name {
+        font-size: 1.6rem;
+    }
+
+    .dv-stats {
+        flex-wrap: wrap;
+    }
+
+    .dv-stat {
+        flex: 1 1 33%;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .dv-sidebar {
+        grid-template-columns: 1fr;
+    }
+
+    .dv-cta {
+        grid-column: span 1;
+    }
+
+    }
+</style>
+
+<div class="sv-detail">
+    <div class="dv-wrap">
+
+        @Html.AntiForgeryToken()
+
+        <!-- Breadcrumb -->
+        <nav class="dv-breadcrumb rv on">
+            <a href="/" class="dv-breadcrumb-home">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+                Home
+            </a>
+            <span class="dv-breadcrumb-sep">›</span>
+            <a href="@Url.Action("Index", "Companies", new { area = "TeamRooms" })">Companies</a>
+            <span class="dv-breadcrumb-sep">›</span>
+            <span>@Model.CompanyName</span>
+        </nav>
+
+        <!-- Hero -->
+        <div class="dv-hero rv on">
+            <div class="dv-hero-grid"></div>
+            <div class="dv-hero-inner">
+                <div class="dv-hero-logo">
+                    @if (!string.IsNullOrEmpty(Model.LogoUrl))
+                    {
+                        <img src="@Model.LogoUrl" alt="@Model.CompanyName">
+                    }
+                    else
+                    {
+                        @Model.CompanyName.Substring(0, 1).ToUpper()
+                    }
+                </div>
+                <div class="dv-hero-info">
+                    <div class="dv-hero-badges">
+                        <span class="dv-verified">
+                            <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Verified Company
+                        </span>
+                        <span class="dv-industry-tag">
+                            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" /></svg>
+                            @Model.Industry
+                        </span>
+                    </div>
+                    <h1 class="dv-hero-name">@Model.CompanyName</h1>
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <p class="dv-hero-desc">@Model.Description</p>
+                    }
+                    @if (rating > 0)
+                    {
+                        <div class="dv-hero-rating">
+                            <div class="dv-stars">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <span class="dv-star @(i <= (int)rating ? "" : "empty")">★</span>
+                                }
+                            </div>
+                            <span class="dv-rating-val">@rating.ToString("0.0")</span>
+                            <span class="dv-rating-cnt">(@Model.TotalReviews reviews)</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Strip -->
+        <div class="dv-stats rv on">
+            <div class="dv-stat">
+                <div class="dv-stat-val">@Model.CompletedProjects<span>+</span></div>
+                <div class="dv-stat-lbl">Projects Done</div>
+            </div>
+            <div class="dv-stat">
+                <div class="dv-stat-val">@(rating > 0 ? rating.ToString("0.0") : "—")</div>
+                <div class="dv-stat-lbl">Avg Rating</div>
+            </div>
+            <div class="dv-stat">
+                <div class="dv-stat-val">@Model.TotalReviews</div>
+                <div class="dv-stat-lbl">Reviews</div>
+            </div>
+            <div class="dv-stat">
+                <div class="dv-stat-val">@(Model.Services?.Count(s => s.IsActive) ?? 0)</div>
+                <div class="dv-stat-lbl">Services</div>
+            </div>
+            <div class="dv-stat">
+                <div class="dv-stat-val">@(Model.CompanySize ?? "—")</div>
+                <div class="dv-stat-lbl">Team Size</div>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="dv-grid">
+
+            <!-- LEFT COLUMN -->
+            <div>
+
+                <!-- Services -->
+                <div class="dv-card rv d1">
+                    <div class="dv-card-head">
+                        <div class="dv-card-title">
+                            <div class="dv-card-title-icon">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+                            </div>
+                            Services
+                        </div>
+                        <span class="dv-card-meta">@(Model.Services?.Count(s => s.IsActive) ?? 0) available</span>
+                    </div>
+                    <div class="dv-card-body">
+                        @if (Model.Services == null || !Model.Services.Any(s => s.IsActive))
+                        {
+                            <div class="dv-empty">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+                                <p>No services listed yet.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            @foreach (var svc in Model.Services.Where(s => s.IsActive))
+                            {
+                                var tierCls = (svc.ServiceTier?.ToLower()) switch
+                                {
+                                    "starter" => "badge-starter",
+                                    "pro" => "badge-pro",
+                                    "enterprise" => "badge-enterprise",
+                                    _ => "badge-starter"
+                                };
+                                <div class="dv-service" id="svc-@svc.ServiceId"
+                                     onclick="dvSelectService(@svc.ServiceId,'@Html.Raw(svc.ServiceName.Replace("'", "\\'"))','@svc.ServiceTier',@svc.StartingPrice)">
+                                    <div class="dv-svc-top">
+                                        <div style="flex:1">
+                                            <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+                                                <span class="dv-svc-name">@svc.ServiceName</span>
+                                                <span class="dv-tier-badge @tierCls">@svc.ServiceTier</span>
+                                            </div>
+                                            @if (!string.IsNullOrWhiteSpace(svc.Description))
+                                            {
+                                                <p class="dv-svc-desc">@svc.Description</p>
+                                            }
+                                            <div class="dv-svc-chips">
+                                                @if (!string.IsNullOrEmpty(svc.DeliveryTime))
+                                                {
+                                                    <span class="dv-svc-chip">
+                                                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                                                        @svc.DeliveryTime
+                                                    </span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(svc.PricingModel))
+                                                {
+                                                    <span class="dv-svc-chip">
+                                                        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>
+                                                        @svc.PricingModel
+                                                    </span>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="dv-svc-price">
+                                            <div class="dv-svc-price-val">$@svc.StartingPrice.ToString("N0")</div>
+                                            <div class="dv-svc-price-lbl">starting at</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <!-- Reviews -->
+                <div class="dv-card rv d2">
+                    <div class="dv-card-head">
+                        <div class="dv-card-title">
+                            <div class="dv-card-title-icon">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                            </div>
+                            Client Reviews
+                        </div>
+                        @if (rating > 0)
+                        {
+                            <span class="dv-card-meta">★ @rating.ToString("0.0") · @Model.TotalReviews reviews</span>
+                        }
+                    </div>
+                    <div class="dv-card-body">
+                        @if (Model.Reviews == null || !Model.Reviews.Any())
+                        {
+                            <div class="dv-empty">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                <p>No reviews yet. Be the first to collaborate!</p>
+                            </div>
+                        }
+                        else
+                        {
+                            @foreach (var rev in Model.Reviews.OrderByDescending(r => r.CreatedAt).Take(5))
+                            {
+                                <div class="dv-review">
+                                    <div class="dv-review-head">
+                                        <span class="dv-reviewer">@@(rev.ReviewerUser?.FullName ?? "Client")</span>
+                                        <span class="dv-review-date">@rev.CreatedAt.ToString("MMM dd, yyyy")</span>
+                                    </div>
+                                    <div class="dv-review-stars">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <span class="dv-star @(i <= rev.Rating ? "" : "empty")">★</span>
+                                        }
+                                    </div>
+                                    @if (!string.IsNullOrWhiteSpace(rev.Comment))
+                                    {
+                                        <p class="dv-review-text">@rev.Comment</p>
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT SIDEBAR -->
+            <div class="dv-sidebar">
+
+                <!-- CTA -->
+                @if (isClient)
+                {
+                    <div class="dv-cta rv d1">
+                        <div class="dv-cta-icon">
+                            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+                        </div>
+                        <h4>Work with @Model.CompanyName</h4>
+                        <p>Select a service above, or send a custom project request directly.</p>
+                        <button class="dv-btn dv-btn-primary" onclick="dvOpenModal()">
+                            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+                            Send Request
+                        </button>
+                    </div>
+                }
+                else if (!isAuthenticated)
+                {
+                    <div class="dv-cta rv d1">
+                        <div class="dv-cta-icon">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+                        </div>
+                        <h4>Want to collaborate?</h4>
+                        <p>Sign in as a Client to send a project request.</p>
+                        <a href="@Url.Action("Login", "Account", new { area = "Identity" })" class="dv-btn dv-btn-white">
+                            <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" y1="12" x2="3" y2="12" /></svg>
+                            Sign In
+                        </a>
+                    </div>
+                }
+
+                <!-- Company Info -->
+                <div class="dv-card rv d2">
+                    <div class="dv-card-head">
+                        <div class="dv-card-title">
+                            <div class="dv-card-title-icon">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                            </div>
+                            Company Info
+                        </div>
+                    </div>
+                    <div class="dv-card-body">
+                        @if (!string.IsNullOrEmpty(Model.City) || !string.IsNullOrEmpty(Model.Country))
+                        {
+                            <div class="dv-info-row">
+                                <span class="dv-info-lbl">
+                                    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                                    Location
+                                </span>
+                                <span class="dv-info-val">@string.Join(", ", new[] { Model.City, Model.Country }.Where(s => !string.IsNullOrEmpty(s)))</span>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.CompanySize))
+                        {
+                            <div class="dv-info-row">
+                                <span class="dv-info-lbl">
+                                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>
+                                    Team Size
+                                </span>
+                                <span class="dv-info-val">@Model.CompanySize</span>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Website))
+                        {
+                            <div class="dv-info-row">
+                                <span class="dv-info-lbl">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg>
+                                    Website
+                                </span>
+                                <a href="@Model.Website" target="_blank" class="dv-info-link">Visit ↗</a>
+                            </div>
+                        }
+                        <div class="dv-info-row">
+                            <span class="dv-info-lbl">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+                                Member Since
+                            </span>
+                            <span class="dv-info-val">@Model.CreatedAt.ToString("MMM yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Managers -->
+                @if (Model.Managers != null && Model.Managers.Any(m => m.IsActive))
+                {
+                    <div class="dv-card rv d3">
+                        <div class="dv-card-head">
+                            <div class="dv-card-title">
+                                <div class="dv-card-title-icon">
+                                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                                </div>
+                                Contact
+                            </div>
+                        </div>
+                        <div class="dv-card-body">
+                            @foreach (var mgr in Model.Managers.Where(m => m.IsActive).Take(3))
+                            {
+                                <div class="dv-manager">
+                                    <div class="dv-mgr-av">@(mgr.User?.FullName?.Substring(0, 1).ToUpper() ?? "M")</div>
+                                    <div>
+                                        <div class="dv-mgr-name">
+                                            @(mgr.User?.FullName ?? "Manager")
+                                            @if (mgr.IsPrimaryContact)
+                                            {
+                                                <span class="dv-mgr-primary">Primary</span>
+                                            }
+                                        </div>
+                                        <div class="dv-mgr-pos">@mgr.Position</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="sv-modal-overlay" id="dvModalOverlay">
+    <div class="sv-modal" role="dialog" aria-modal="true">
+        <div class="sv-modal-header">
+            <div class="sv-modal-title">
+                <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+                Send Request to @Model.CompanyName
+            </div>
+            <button class="sv-modal-close" onclick="dvCloseModal()">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+        </div>
+        <div class="sv-modal-body">
+            <input type="hidden" id="dvCompanyId" value="@Model.CompanyId">
+            <input type="hidden" id="dvServiceId">
+            <input type="hidden" id="dvServiceTier">
+            <div id="dvSvcBox" class="sv-field" style="display:none;">
+                <label class="sv-label">Selected Service</label>
+                <div class="sv-svc-chip">
+                    <div class="sv-svc-chip-l">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>
+                        <span class="sv-svc-chip-name" id="dvChipService"></span>
+                    </div>
+                    <div style="display:flex;align-items:center">
+                        <span class="sv-svc-chip-price" id="dvChipPrice"></span>
+                        <a class="sv-svc-clear" href="#" onclick="dvClearService(event)">✕ Clear</a>
+                    </div>
+                </div>
+            </div>
+            <div class="sv-field">
+                <label class="sv-label">Project Name <span style="color:var(--red)">*</span></label>
+                <input type="text" class="sv-input" id="dvProjectName" placeholder="e.g. E-commerce Platform" maxlength="200">
+            </div>
+            <div class="sv-field">
+                <label class="sv-label">Description</label>
+                <textarea class="sv-textarea" id="dvDescription" placeholder="Describe your project and requirements…"></textarea>
+            </div>
+            <div class="sv-field">
+                <label class="sv-label">Budget (USD) — Optional</label>
+                <input type="number" class="sv-input" id="dvBudget" placeholder="e.g. 5,000" min="0">
+                <div class="sv-hint">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                    The company will respond with a formal proposal.
+                </div>
+            </div>
+        </div>
+        <div class="sv-modal-footer">
+            <button class="dv-btn dv-btn-outline" style="width:auto;min-width:90px;" onclick="dvCloseModal()">Cancel</button>
+            <button class="dv-btn dv-btn-primary" id="dvSendBtn" style="flex:1;">
+                <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.5"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+                Send Request
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function(){
+            var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+
+            /* ── Scroll Reveal ── */
+            var io=new IntersectionObserver(function(entries){
+                entries.forEach(function(e){ if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);} });
+            },{threshold:0.07,rootMargin:'0px 0px -30px 0px'});
+            document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
+
+            /* ── Toast ── */
+            function toast(msg,type){
+                var t=document.createElement('div');
+                t.className='sv-toast '+(type||'success');
+                var icon=type==='error'
+                    ?'<span class="sv-toast-icon"><svg viewBox="0 0 24 24" style="stroke:#991B1B;fill:none;stroke-width:2;width:18px;height:18px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span>'
+                    :'<span class="sv-toast-icon"><svg viewBox="0 0 24 24" style="stroke:#065F46;fill:none;stroke-width:2;width:18px;height:18px"><polyline points="20 6 9 17 4 12"/></svg></span>';
+                t.innerHTML=icon+msg;
+                document.body.appendChild(t);
+                setTimeout(function(){ t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(function(){t.remove();},300); },3500);
+            }
+
+            /* ── Service Select ── */
+            window.dvSelectService = function(id,name,tier,price){
+                document.querySelectorAll('.dv-service').forEach(function(c){c.classList.remove('selected');});
+                var card=document.getElementById('svc-'+id);
+                if(card) card.classList.add('selected');
+                document.getElementById('dvServiceId').value=id;
+                document.getElementById('dvServiceTier').value=tier;
+                document.getElementById('dvChipService').textContent=name;
+                document.getElementById('dvChipPrice').textContent='$'+Number(price).toLocaleString();
+                document.getElementById('dvSvcBox').style.display='block';
+                document.getElementById('dvBudget').value=price>0?price:'';
+                dvOpenModal();
+            };
+
+            window.dvClearService = function(e){
+                e.preventDefault();
+                document.getElementById('dvServiceId').value='';
+                document.getElementById('dvServiceTier').value='';
+                document.getElementById('dvSvcBox').style.display='none';
+                document.querySelectorAll('.dv-service').forEach(function(c){c.classList.remove('selected');});
+            };
+
+            window.dvOpenModal = function(){
+                document.getElementById('dvProjectName').value='';
+                document.getElementById('dvDescription').value='';
+                var btn=document.getElementById('dvSendBtn');
+                btn.disabled=false;
+                btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Request';
+                document.getElementById('dvModalOverlay').classList.add('open');
+                setTimeout(function(){document.getElementById('dvProjectName').focus();},120);
+            };
+
+            window.dvCloseModal = function(){
+                document.getElementById('dvModalOverlay').classList.remove('open');
+            };
+
+            document.getElementById('dvModalOverlay').addEventListener('click',function(e){ if(e.target===this) dvCloseModal(); });
+            document.addEventListener('keydown',function(e){ if(e.key==='Escape') dvCloseModal(); });
+
+            /* ── Send ── */
+            document.getElementById('dvSendBtn').addEventListener('click',function(){
+                var name=document.getElementById('dvProjectName').value.trim();
+                if(!name){ toast('Please enter a project name.','error'); document.getElementById('dvProjectName').focus(); return; }
+                var btn=this;
+                btn.disabled=true;
+                btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2;animation:dvSpin 1s linear infinite"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Sending…';
+
+                fetch('@Url.Action("Book", "Companies", new { area = "TeamRooms" })',{
+                    method:'POST',
+                    headers:{'Content-Type':'application/x-www-form-urlencoded','RequestVerificationToken':token},
+                    body:new URLSearchParams({
+                        companyId:           document.getElementById('dvCompanyId').value,
+                        projectName:         name,
+                        description:         document.getElementById('dvDescription').value.trim(),
+                        clientBudget:        document.getElementById('dvBudget').value||'0',
+                        selectedServiceId:   document.getElementById('dvServiceId').value||'',
+                        selectedServiceTier: document.getElementById('dvServiceTier').value||''
+                    })
+                })
+                .then(function(r){return r.json();})
+                .then(function(r){
+                    if(r.success){
+                        toast('✅ Request sent! Waiting for company proposal.','success');
+                        dvCloseModal();
+                        setTimeout(function(){window.location.href=r.redirectUrl||'@Url.Action("MyRequests", "Projects", new { area = "TeamRooms" })';},1300);
+                    } else {
+                        toast(r.message||'Something went wrong.','error');
+                        btn.disabled=false;
+                        btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Request';
+                    }
+                })
+                .catch(function(){
+                    toast('Server error. Please try again.','error');
+                    btn.disabled=false;
+                    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Request';
+                });
+            });
+
+            document.getElementById('dvProjectName').addEventListener('keydown',function(e){
+                if(e.key==='Enter') document.getElementById('dvSendBtn').click();
+            });
+
+            var s=document.createElement('style');
+            s.textContent='@@keyframes dvSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
+            document.head.appendChild(s);
+        })();
+    </script>
+}

@@ -1,0 +1,1425 @@
+﻿
+
+
+@model ScalaVerse.ViewModel.TeamLeader_Dashboard_VM.TeamLeaderDashboardViewModel
+@{
+    ViewData["Title"] = "Team Dashboard";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+
+
+}
+
+<style>
+    /* ═══════════════════════════════════════
+         TOKENS
+      ═══════════════════════════════════════ */
+    :root {
+        --navy: #0A0E1A;
+        --navy-2: #111827;
+        --navy-3: #1F2937;
+        --purple: #7C3AED;
+        --purple-2: #6D28D9;
+        --purple-3: #8B5CF6;
+        --purple-4: #A78BFA;
+        --purple-5: #EDE9FE;
+        --white: #FFFFFF;
+        --off: #F9FAFB;
+        --border: #E5E7EB;
+        --border-2: #F3F4F6;
+        --text: #0F172A;
+        --text-2: #374151;
+        --muted: #6B7280;
+        --subtle: #9CA3AF;
+        --green: #059669;
+        --green-bg: #ECFDF5;
+        --amber: #D97706;
+        --amber-bg: #FFFBEB;
+        --red: #DC2626;
+        --red-bg: #FEF2F2;
+        --blue: #2563EB;
+        --blue-bg: #EFF6FF;
+        --f-display: 'Plus Jakarta Sans', sans-serif;
+        --f-body: 'Inter', sans-serif;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --radius: 12px;
+        --radius-lg: 16px;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+        --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+        --shadow-md: 0 4px 24px rgba(0,0,0,0.1);
+        --shadow-lg: 0 8px 40px rgba(0,0,0,0.14);
+    }
+
+    /* ═══════════════════════════════════════
+         HERO — Arc.dev inspired
+      ═══════════════════════════════════════ */
+    .hero {
+        background: var(--navy);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+        animation: fadeUp 0.5s var(--ease) both;
+    }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 70% 80% at 100% 0%, rgba(124,58,237,0.18) 0%, transparent 60%), radial-gradient(ellipse 50% 60% at 0% 100%, rgba(37,99,235,0.1) 0%, transparent 55%);
+        }
+
+    .hero-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+        background-size: 44px 44px;
+    }
+
+    .hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 24px;
+    }
+
+    .hero-left {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(124,58,237,0.15);
+        border: 1px solid rgba(124,58,237,0.25);
+        border-radius: 100px;
+        padding: 4px 12px 4px 8px;
+        margin-bottom: 14px;
+    }
+
+    .hero-tag-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--purple-4);
+    }
+
+    .hero-tag-text {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--purple-4);
+    }
+
+    .hero-name {
+        font-family: var(--f-display);
+        font-size: clamp(1.4rem, 3vw, 1.9rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: #fff;
+        line-height: 1.15;
+        margin-bottom: 8px;
+    }
+
+    .hero-sub {
+        font-size: 0.88rem;
+        color: rgba(255,255,255,0.45);
+        max-width: 440px;
+        line-height: 1.65;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+    }
+
+    .ha-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-family: var(--f-body);
+        font-size: 0.84rem;
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.2s var(--ease);
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+
+        .ha-btn i {
+            font-size: 14px;
+        }
+
+    .ha-primary {
+        background: var(--purple);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(124,58,237,0.4);
+        border-color: var(--purple);
+    }
+
+        .ha-primary:hover {
+            background: var(--purple-2);
+            transform: translateY(-1px);
+            color: #fff;
+        }
+
+    .ha-ghost {
+        background: rgba(255,255,255,0.07);
+        color: rgba(255,255,255,0.75);
+        border-color: rgba(255,255,255,0.12);
+        backdrop-filter: blur(4px);
+    }
+
+        .ha-ghost:hover {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+        }
+
+    /* Hero right: mini stats */
+    .hero-stats {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .hero-stat-mini {
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 16px 20px;
+        text-align: center;
+        min-width: 88px;
+        transition: background 0.2s;
+    }
+
+        .hero-stat-mini:hover {
+            background: rgba(255,255,255,0.11);
+        }
+
+    .hsm-val {
+        font-family: var(--f-display);
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+
+    .hsm-label {
+        font-size: 0.63rem;
+        color: rgba(255,255,255,0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    /* ═══════════════════════════════════════
+         ALERT BANNER
+      ═══════════════════════════════════════ */
+    .alert-wrap {
+        background: linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(109,40,217,0.06) 100%);
+        border: 1px solid rgba(124,58,237,0.25);
+        border-radius: var(--radius);
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 20px;
+        animation: fadeUp 0.5s var(--ease) 0.05s both;
+    }
+
+    .alert-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--purple-4);
+        flex-shrink: 0;
+        box-shadow: 0 0 8px rgba(167,139,250,0.6);
+        animation: pulse 2s infinite;
+    }
+    @@keyframes pulse {
+        0%,100%
+
+    {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    }
+
+    .alert-text {
+        flex: 1;
+        font-size: 0.85rem;
+        color: var(--text-2);
+    }
+
+        .alert-text strong {
+            color: var(--text);
+        }
+
+    .alert-link {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--purple);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 14px;
+        border-radius: 8px;
+        background: var(--purple-5);
+        border: 1px solid rgba(124,58,237,0.2);
+        transition: all 0.15s;
+        white-space: nowrap;
+    }
+
+        .alert-link:hover {
+            background: var(--purple);
+            color: #fff;
+        }
+
+    /* ═══════════════════════════════════════
+         STATS ROW
+      ═══════════════════════════════════════ */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .sc {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.22s var(--ease);
+        animation: fadeUp 0.5s var(--ease) both;
+    }
+
+        .sc:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(124,58,237,0.15);
+        }
+
+        .sc.featured {
+            background: var(--navy);
+            border-color: rgba(124,58,237,0.3);
+            box-shadow: 0 4px 20px rgba(124,58,237,0.15);
+        }
+
+            .sc.featured .sc-label {
+                color: rgba(255,255,255,0.4);
+            }
+
+            .sc.featured .sc-val {
+                color: #fff;
+            }
+
+            .sc.featured .sc-delta {
+                color: var(--purple-4);
+            }
+
+    .sc-stripe {
+        height: 3px;
+    }
+
+    .s-purple {
+        background: linear-gradient(90deg, var(--purple), var(--purple-3));
+    }
+
+    .s-blue {
+        background: linear-gradient(90deg, var(--blue), #60A5FA);
+    }
+
+    .s-green {
+        background: linear-gradient(90deg, var(--green), #34D399);
+    }
+
+    .s-amber {
+        background: linear-gradient(90deg, var(--amber), #FCD34D);
+    }
+
+    .s-navy {
+        background: linear-gradient(90deg, var(--purple-2), var(--purple-3));
+    }
+
+    .sc-body {
+        padding: 16px 18px 14px;
+    }
+
+    .sc-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .si-purple {
+        background: var(--purple-5);
+        color: var(--purple);
+    }
+
+    .si-blue {
+        background: var(--blue-bg);
+        color: var(--blue);
+    }
+
+    .si-green {
+        background: var(--green-bg);
+        color: var(--green);
+    }
+
+    .si-amber {
+        background: var(--amber-bg);
+        color: var(--amber);
+    }
+
+    .si-white {
+        background: rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.7);
+    }
+
+    .sc-label {
+        font-size: 0.67rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 4px;
+    }
+
+    .sc-val {
+        font-family: var(--f-display);
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        color: var(--text);
+        line-height: 1;
+    }
+
+    .sc-delta {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--green);
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        margin-top: 7px;
+    }
+
+        .sc-delta.n {
+            color: var(--muted);
+        }
+
+    .sc:nth-child(1) {
+        animation-delay: .05s
+    }
+
+    .sc:nth-child(2) {
+        animation-delay: .1s
+    }
+
+    .sc:nth-child(3) {
+        animation-delay: .15s
+    }
+
+    .sc:nth-child(4) {
+        animation-delay: .2s
+    }
+
+    .sc:nth-child(5) {
+        animation-delay: .25s
+    }
+
+    /* ═══════════════════════════════════════
+         MAIN GRID
+      ═══════════════════════════════════════ */
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 16px;
+        align-items: start;
+        animation: fadeUp 0.5s var(--ease) 0.2s both;
+    }
+
+    /* ═══════════════════════════════════════
+         CARDS
+      ═══════════════════════════════════════ */
+    .card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        margin-bottom: 16px;
+        transition: border-color 0.2s;
+    }
+
+        .card:last-child {
+            margin-bottom: 0;
+        }
+
+        .card:hover {
+            border-color: rgba(124,58,237,0.1);
+        }
+
+    .card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border-2);
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--f-display);
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+    }
+
+        .card-title i {
+            color: var(--purple);
+            font-size: 15px;
+        }
+
+    .card-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 100px;
+        background: var(--purple-5);
+        color: var(--purple);
+    }
+
+    .card-link {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--purple);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        transition: gap 0.15s;
+    }
+
+        .card-link:hover {
+            gap: 6px;
+        }
+
+    .card-body {
+        padding: 16px 20px;
+    }
+
+    /* ═══════════════════════════════════════
+         REQUEST ITEMS — Gigster inspired
+      ═══════════════════════════════════════ */
+    .req {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border-2);
+    }
+
+        .req:first-child {
+            padding-top: 0;
+        }
+
+        .req:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .req-av {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--purple), var(--purple-3));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #fff;
+    }
+
+    .req-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .req-name {
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .req-meta {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 0.63rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 100px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .c-green {
+        background: var(--green-bg);
+        color: var(--green);
+    }
+
+    .c-red {
+        background: var(--red-bg);
+        color: var(--red);
+    }
+
+    .c-gray {
+        background: var(--border-2);
+        color: var(--muted);
+    }
+
+    .req-btn {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--purple);
+        background: var(--purple-5);
+        border: 1px solid rgba(124,58,237,0.15);
+        padding: 5px 12px;
+        border-radius: 7px;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+
+        .req-btn:hover {
+            background: var(--purple);
+            color: #fff;
+        }
+
+    /* ═══════════════════════════════════════
+         PROJECT ITEMS
+      ═══════════════════════════════════════ */
+    .proj {
+        padding: 13px 0;
+        border-bottom: 1px solid var(--border-2);
+    }
+
+        .proj:first-child {
+            padding-top: 0;
+        }
+
+        .proj:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .proj-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 4px;
+    }
+
+    .proj-name {
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
+    }
+
+    .proj-client {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-bottom: 8px;
+    }
+
+    .status-tag {
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 100px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+    }
+
+    .st-active {
+        background: var(--green-bg);
+        color: var(--green);
+    }
+
+    .st-completed {
+        background: var(--purple-5);
+        color: var(--purple);
+    }
+
+    .st-pending {
+        background: var(--amber-bg);
+        color: var(--amber);
+    }
+
+    .st-onhold {
+        background: var(--border-2);
+        color: var(--muted);
+    }
+
+    .prog-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .prog-track {
+        flex: 1;
+        height: 4px;
+        background: var(--border-2);
+        border-radius: 99px;
+        overflow: hidden;
+    }
+
+    .prog-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--purple), var(--purple-3));
+        transition: width 0.8s var(--ease);
+    }
+
+    .prog-pct {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted);
+        min-width: 28px;
+        text-align: right;
+    }
+
+    .proj-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 7px;
+    }
+
+    .proj-budget {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-2);
+    }
+
+    .proj-link {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--purple);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        transition: gap 0.15s;
+    }
+
+        .proj-link:hover {
+            gap: 5px;
+        }
+
+    /* ═══════════════════════════════════════
+         SIDEBAR
+      ═══════════════════════════════════════ */
+    /* Profile card — Arc.dev style */
+    .profile-wrap {
+        padding: 20px;
+        border-bottom: 1px solid var(--border-2);
+    }
+
+    .profile-top {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 14px;
+    }
+
+    .profile-av {
+        width: 52px;
+        height: 52px;
+        border-radius: 13px;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--purple), var(--purple-3));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--f-display);
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(124,58,237,0.3);
+    }
+
+    .profile-name {
+        font-family: var(--f-display);
+        font-size: 0.96rem;
+        font-weight: 800;
+        color: var(--text);
+        letter-spacing: -0.02em;
+    }
+
+    .profile-role {
+        font-size: 0.74rem;
+        color: var(--muted);
+        margin-top: 2px;
+    }
+
+    .verified {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.63rem;
+        font-weight: 700;
+        color: var(--green);
+        background: var(--green-bg);
+        padding: 2px 8px;
+        border-radius: 100px;
+        margin-top: 4px;
+    }
+
+    .profile-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .ps-item {
+        background: var(--off);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 10px 8px;
+        text-align: center;
+    }
+
+    .ps-val {
+        font-family: var(--f-display);
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text);
+        line-height: 1;
+    }
+
+    .ps-label {
+        font-size: 0.6rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 3px;
+    }
+
+    .profile-links {
+        padding: 10px 16px;
+    }
+
+    .plink {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--muted);
+        transition: all 0.15s;
+        cursor: pointer;
+        background: none;
+        border: none;
+        width: 100%;
+        text-align: left;
+        font-family: var(--f-body);
+        margin-bottom: 2px;
+    }
+
+        .plink i {
+            font-size: 14px;
+            width: 16px;
+            color: var(--subtle);
+            transition: color 0.15s;
+        }
+
+        .plink:hover {
+            background: var(--off);
+            color: var(--text);
+        }
+
+            .plink:hover i {
+                color: var(--purple);
+            }
+
+        .plink.danger:hover {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+            .plink.danger:hover i {
+                color: var(--red);
+            }
+
+    /* Teams list */
+    .team-item {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--border-2);
+    }
+
+        .team-item:first-child {
+            padding-top: 0;
+        }
+
+        .team-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .team-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        flex-shrink: 0;
+        background: var(--purple-5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .team-icon svg {
+            width: 15px;
+            height: 15px;
+            stroke: var(--purple);
+            fill: none;
+            stroke-width: 2;
+        }
+
+    .team-nm {
+        font-size: 0.83rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .team-sp {
+        font-size: 0.7rem;
+        color: var(--muted);
+        margin-top: 1px;
+    }
+
+    .team-rating {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--amber);
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .dot-green {
+        background: var(--green);
+        box-shadow: 0 0 5px rgba(5,150,105,0.5);
+    }
+
+    .dot-amber {
+        background: var(--amber);
+    }
+
+    /* ═══════════════════════════════════════
+         EMPTY STATE
+      ═══════════════════════════════════════ */
+    .empty {
+        text-align: center;
+        padding: 32px 16px;
+    }
+
+    .empty-icon {
+        font-size: 28px;
+        color: var(--border);
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .empty-title {
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: var(--text-2);
+        margin-bottom: 4px;
+    }
+
+    .empty-sub {
+        font-size: 0.77rem;
+        color: var(--muted);
+    }
+
+    /* ═══════════════════════════════════════
+         ANIMATIONS
+      ═══════════════════════════════════════ */
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(14px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ═══════════════════════════════════════
+         RESPONSIVE — FULL
+      ═══════════════════════════════════════ */
+
+    /* Tablet landscape (< 1200px) */
+    @@media (max-width: 1200px) {
+        .stats-row {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-stats {
+            display: none;
+        }
+    }
+
+    /* Tablet portrait (< 900px) */
+    @@media (max-width: 900px) {
+        .hero {
+            padding: 24px;
+        }
+
+        .hero-name {
+            font-size: 1.4rem;
+        }
+
+        .hero-actions .ha-ghost {
+            display: none;
+        }
+
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* Mobile landscape (< 640px) */
+    @@media (max-width: 640px) {
+        .hero {
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .hero-name {
+            font-size: 1.25rem;
+        }
+
+        .hero-sub {
+            display: none;
+        }
+
+        .stats-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .card-head {
+            padding: 12px 16px;
+        }
+
+        .card-body {
+            padding: 12px 16px;
+        }
+
+        .profile-wrap {
+            padding: 16px;
+        }
+    }
+
+    /* Mobile portrait (< 400px) */
+    @@media (max-width: 400px) {
+        .stats-row {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+        }
+
+        .ha-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-inner">
+        <div class="hero-left">
+            <div class="hero-tag">
+                <span class="hero-tag-dot"></span>
+                <span class="hero-tag-text">Team Leader Dashboard</span>
+            </div>
+            <div class="hero-name">Good work, @(Model.TeamLeaderName?.Split(' ')[0] ?? "Leader") 👋</div>
+            <div class="hero-sub">Here's a live overview of your teams, projects, and incoming requests.</div>
+            <div class="hero-actions">
+                <a href="@Url.Action("Create", "TeamRooms", new { area = "TeamRooms" })" class="ha-btn ha-primary">
+                    <i class="bi bi-plus-lg"></i> New Team
+                </a>
+                <a href="@Url.Action("IncomingRequests", "Projects", new { area = "TeamRooms" })" class="ha-btn ha-ghost">
+                    <i class="bi bi-inbox"></i> View Requests
+                </a>
+            </div>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat-mini">
+                <div class="hsm-val">@Model.TotalProjects</div>
+                <div class="hsm-label">Projects</div>
+            </div>
+            <div class="hero-stat-mini">
+                <div class="hsm-val">@Model.ActiveProjects</div>
+                <div class="hsm-label">Active</div>
+            </div>
+            <div class="hero-stat-mini">
+                <div class="hsm-val">@Model.AverageRating.ToString("0.0")★</div>
+                <div class="hsm-label">Rating</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ ALERT ══ -->
+@if (Model.PendingRequestsCount > 0)
+{
+    <div class="alert-wrap">
+        <span class="alert-dot"></span>
+        <div class="alert-text">
+            <strong>@Model.PendingRequestsCount pending request@(Model.PendingRequestsCount > 1 ? "s" : "")</strong> waiting for your response — clients respond faster when you reply within 24h.
+        </div>
+        <a href="@Url.Action("IncomingRequests", "Projects", new { area = "TeamRooms" })" class="alert-link">
+            Review Now <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+}
+
+<!-- ══ STATS ══ -->
+<div class="stats-row">
+    <div class="sc">
+        <div class="sc-stripe s-purple"></div>
+        <div class="sc-body">
+            <div class="sc-icon si-purple"><i class="bi bi-folder-fill"></i></div>
+            <div class="sc-label">Total Projects</div>
+            <div class="sc-val">@Model.TotalProjects</div>
+            <div class="sc-delta n"><i class="bi bi-dash"></i> All time</div>
+        </div>
+    </div>
+    <div class="sc">
+        <div class="sc-stripe s-blue"></div>
+        <div class="sc-body">
+            <div class="sc-icon si-blue"><i class="bi bi-play-circle-fill"></i></div>
+            <div class="sc-label">Active</div>
+            <div class="sc-val">@Model.ActiveProjects</div>
+            <div class="sc-delta"><i class="bi bi-arrow-up"></i> In progress</div>
+        </div>
+    </div>
+    <div class="sc">
+        <div class="sc-stripe s-green"></div>
+        <div class="sc-body">
+            <div class="sc-icon si-green"><i class="bi bi-check-circle-fill"></i></div>
+            <div class="sc-label">Completed</div>
+            <div class="sc-val">@Model.CompletedProjects</div>
+            <div class="sc-delta"><i class="bi bi-patch-check-fill"></i> Delivered</div>
+        </div>
+    </div>
+    <div class="sc featured">
+        <div class="sc-stripe s-navy"></div>
+        <div class="sc-body">
+            <div class="sc-icon si-white"><i class="bi bi-wallet2"></i></div>
+            <div class="sc-label">Total Earned</div>
+            <div class="sc-val" style="font-size:1.5rem">$@Model.TotalEarnings.ToString("N0")</div>
+            <div class="sc-delta"><i class="bi bi-graph-up-arrow"></i> From completed</div>
+        </div>
+    </div>
+    <div class="sc">
+        <div class="sc-stripe s-amber"></div>
+        <div class="sc-body">
+            <div class="sc-icon si-amber"><i class="bi bi-star-fill"></i></div>
+            <div class="sc-label">Avg. Rating</div>
+            <div class="sc-val">@Model.AverageRating.ToString("0.0")</div>
+            <div class="sc-delta n"><i class="bi bi-people-fill"></i> Client reviews</div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MAIN GRID ══ -->
+<div class="main-grid">
+
+    <!-- LEFT -->
+    <div>
+        <!-- Incoming Requests -->
+        <div class="card">
+            <div class="card-head">
+                <h5 class="card-title">
+                    <i class="bi bi-inbox-fill"></i> Incoming Requests
+                    @if (Model.IncomingRequests.Any())
+                    {
+                        <span class="card-badge">@Model.IncomingRequests.Count</span>
+                    }
+                </h5>
+                <a href="@Url.Action("IncomingRequests", "Projects", new { area = "TeamRooms" })" class="card-link">
+                    View all <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                @if (!Model.IncomingRequests.Any())
+                {
+                    <div class="empty">
+                        <i class="bi bi-inbox empty-icon"></i>
+                        <div class="empty-title">No pending requests</div>
+                        <div class="empty-sub">New client requests will appear here</div>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var req in Model.IncomingRequests)
+                    {
+                        var init = req.ClientName?.Substring(0, 1).ToUpper() ?? "C";
+                        var isNew = (DateTime.UtcNow - req.CreatedAt).TotalHours < 24;
+                        <div class="req">
+                            <div class="req-av">@init</div>
+                            <div class="req-info">
+                                <div class="req-name">@req.ProjectName</div>
+                                <div class="req-meta">
+                                    <span style="font-size:0.72rem;color:var(--muted)">@req.ClientName</span>
+                                    @if (req.ClientBudget.HasValue)
+                                    {
+                                        <span class="chip c-green">$@req.ClientBudget.Value.ToString("N0")</span>
+                                    }
+                                    @if (isNew)
+                                    {
+                                        <span class="chip c-red">New</span>
+                                    }
+                                    <span class="chip c-gray">@req.TimeAgo</span>
+                                </div>
+                            </div>
+                            <a href="@Url.Action("IncomingRequests", "Projects", new { area = "TeamRooms" })" class="req-btn">
+                                <i class="bi bi-send" style="font-size:11px"></i> Respond
+                            </a>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- Recent Projects -->
+        <div class="card">
+            <div class="card-head">
+                <h5 class="card-title"><i class="bi bi-kanban-fill"></i> Recent Projects</h5>
+                <a href="@Url.Action("MyTeams", "TeamRooms", new { area = "TeamRooms" })" class="card-link">
+                    All Teams <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                @if (!Model.RecentProjects.Any())
+                {
+                    <div class="empty">
+                        <i class="bi bi-folder2-open empty-icon"></i>
+                        <div class="empty-title">No projects yet</div>
+                        <div class="empty-sub">Accept a request to start your first project</div>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var proj in Model.RecentProjects)
+                    {
+                        var stCls = proj.Status switch
+                        {
+                            "Active" => "st-active",
+                            "InProgress" => "st-active",
+                            "Completed" => "st-completed",
+                            "Pending" => "st-pending",
+                            _ => "st-onhold"
+                        };
+                        <div class="proj">
+                            <div class="proj-row">
+                                <div class="proj-name">@proj.ProjectName</div>
+                                <span class="status-tag @stCls">@proj.Status</span>
+                            </div>
+                            <div class="proj-client"><i class="bi bi-building" style="font-size:11px"></i> @proj.ClientName</div>
+                            <div class="prog-row">
+                                <div class="prog-track">
+                                    <div class="prog-fill" style="width:@proj.ProgressPercentage%"></div>
+                                </div>
+                                <span class="prog-pct">@proj.ProgressPercentage%</span>
+                            </div>
+                            <div class="proj-foot">
+                                <span class="proj-budget">$@proj.Budget.ToString("N0")</span>
+                                <a href="@Url.Action("Details", "Projects", new { area = "TeamRooms", id = proj.ProjectId })" class="proj-link">
+                                    Details <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div>
+
+        <!-- Profile Card -->
+        <div class="card">
+            <div class="profile-wrap">
+                <div class="profile-top">
+                    <div class="profile-av">@(Model.TeamLeaderName?.Substring(0, 1).ToUpper() ?? "T")</div>
+                    <div>
+                        <div class="profile-name">@Model.TeamLeaderName</div>
+                        <div class="profile-role">Team Leader</div>
+                        <div class="verified"><i class="bi bi-patch-check-fill"></i> Verified</div>
+                    </div>
+                </div>
+                <!-- Mini stats inside profile -->
+                <div class="profile-stats">
+                    <div class="ps-item">
+                        <div class="ps-val">@Model.TotalProjects</div>
+                        <div class="ps-label">Projects</div>
+                    </div>
+                    <div class="ps-item">
+                        <div class="ps-val">@Model.CompletedProjects</div>
+                        <div class="ps-label">Done</div>
+                    </div>
+                    <div class="ps-item">
+                        <div class="ps-val">@Model.AverageRating.ToString("0.0")</div>
+                        <div class="ps-label">Rating</div>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-links">
+                <a href="@Url.Action("ViewProfile", "TeamDashboard", new { area = "TeamRooms" })" class="plink">
+                    <i class="bi bi-person-fill"></i> View Profile
+                </a>
+                <a href="@Url.Action("EditProfile", "TeamDashboard", new { area = "TeamRooms" })" class="plink">
+                    <i class="bi bi-pencil-square"></i> Edit Profile
+                </a>
+                <a href="/Identity/Account/ChangePassword" class="plink">
+                    <i class="bi bi-shield-lock-fill"></i> Change Password
+                </a>
+                <form asp-area="Identity" asp-controller="Account" asp-action="Logout" method="post" style="margin:0">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="plink danger">
+                        <i class="bi bi-box-arrow-right"></i> Sign Out
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- My Teams -->
+        @if (Model.MyTeams != null && Model.MyTeams.Any())
+        {
+            <div class="card">
+                <div class="card-head">
+                    <h5 class="card-title"><i class="bi bi-people-fill"></i> My Teams</h5>
+                    <a href="@Url.Action("MyTeams", "TeamRooms", new { area = "TeamRooms" })" class="card-link">
+                        Manage <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    @foreach (var team in Model.MyTeams.Take(4))
+                    {
+                        <div class="team-item">
+                            <div class="team-icon">
+                                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>
+                            </div>
+                            <div style="flex:1;min-width:0">
+                                <div class="team-nm">@team.TeamName</div>
+                                <div class="team-sp">@team.Specialty</div>
+                            </div>
+                            @if (team.AverageRating.HasValue && team.AverageRating > 0)
+                            {
+                                <div class="team-rating"><i class="bi bi-star-fill"></i> @team.AverageRating.Value.ToString("0.0")</div>
+                            }
+                            <div class="dot @(team.IsAvailable ? "dot-green" : "dot-amber")" style="margin-left:6px"
+                                 title="@(team.IsAvailable ? "Available" : "Busy")"></div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        // Progress bars animate in
+        document.querySelectorAll('.prog-fill').forEach(bar => {
+          const w = bar.style.width;
+          bar.style.width = '0';
+          setTimeout(() => { bar.style.width = w; }, 250);
+        });
+    </script>
+}
+
+

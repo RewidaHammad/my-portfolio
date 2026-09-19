@@ -1,0 +1,1320 @@
+﻿@using Scalaverse.Entities.Models
+@model IEnumerable<ProjectRequest>
+@{
+    ViewData["Title"] = "My Requests — ScaleVerse";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    :root {
+        --navy: #0A0E1A;
+        --purple: #7C3AED;
+        --purple-2: #6D28D9;
+        --purple-3: #8B5CF6;
+        --purple-4: #A78BFA;
+        --purple-soft: rgba(124,58,237,0.10);
+        --off: #F9FAFB;
+        --white: #FFFFFF;
+        --border: #E5E7EB;
+        --border-soft: #F3F4F6;
+        --text: #111827;
+        --text-2: #374151;
+        --muted: #6B7280;
+        --green: #059669;
+        --green-bg: #ECFDF5;
+        --green-text: #065F46;
+        --amber: #D97706;
+        --amber-bg: #FFFBEB;
+        --amber-text: #92400E;
+        --blue: #2563EB;
+        --blue-bg: #EFF6FF;
+        --red: #DC2626;
+        --red-bg: #FEF2F2;
+        --red-text: #991B1B;
+        --indigo: #6C5CE7;
+        --f-display: 'Plus Jakarta Sans', sans-serif;
+        --f-body: 'Inter', sans-serif;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --radius: 14px;
+        --radius-sm: 9px;
+        --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+        --shadow-md: 0 8px 32px rgba(0,0,0,0.13);
+    }
+
+    .rw {
+        font-family: var(--f-body);
+        color: var(--text);
+    }
+
+        .rw * {
+            box-sizing: border-box;
+        }
+
+        .rw h1, .rw h2, .rw h3, .rw h4, .rw h5, .rw h6 {
+            font-family: var(--f-display);
+        }
+
+    /* ══ HERO (smaller, matches client dashboard) ══ */
+    .hero-banner {
+        background: linear-gradient(135deg, var(--navy) 0%, #1a1040 55%, #0f1a35 100%);
+        border-radius: var(--radius);
+        padding: 28px 32px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 36px rgba(0,0,0,0.22);
+        animation: fadeUp .4s var(--ease) .05s both;
+        margin-bottom: 18px;
+    }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -40px;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: 25%;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+    .hero-grid-pattern {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+        background-size: 40px 40px;
+    }
+
+    .hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(124,58,237,0.15);
+        border: 1px solid rgba(124,58,237,0.3);
+        border-radius: 100px;
+        padding: 3px 12px 3px 7px;
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--purple-4);
+        margin-bottom: 10px;
+    }
+
+    .pill-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--purple-3);
+        animation: blink 2s infinite;
+    }
+
+    @@keyframes blink {
+        0%, 100% {
+            opacity: 1
+        }
+
+        50% {
+            opacity: .3
+        }
+    }
+
+    .hero-title {
+        font-family: var(--f-display);
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -.03em;
+        color: #fff;
+        margin: 0 0 5px;
+        line-height: 1.18;
+    }
+
+        .hero-title .grad {
+            background: linear-gradient(120deg, #DDD6FE, var(--purple-4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+    .hero-sub {
+        font-size: 0.8rem;
+        color: rgba(255,255,255,.38);
+        margin: 0 0 18px;
+        line-height: 1.55;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+    }
+
+    .hero-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 9px;
+        font-family: var(--f-body);
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all .2s var(--ease);
+        border: 1px solid transparent;
+    }
+
+    .hb-primary {
+        background: var(--purple);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(124,58,237,.4);
+        border-color: var(--purple);
+    }
+
+        .hb-primary:hover {
+            background: var(--purple-2);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    .hb-ghost {
+        background: rgba(255,255,255,.08);
+        color: rgba(255,255,255,.75);
+        border-color: rgba(255,255,255,.13);
+    }
+
+        .hb-ghost:hover {
+            background: rgba(255,255,255,.14);
+            color: #fff;
+        }
+
+    /* ══ TABS ══ */
+    .tabs-wrap {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        animation: fadeUp .4s var(--ease) .1s both;
+    }
+
+    .tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 16px;
+        border-radius: 30px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        font-family: var(--f-display);
+        border: 1.5px solid var(--border);
+        background: var(--white);
+        color: var(--muted);
+        cursor: pointer;
+        transition: all .2s;
+        text-decoration: none;
+    }
+
+        .tab:hover {
+            border-color: var(--purple);
+            color: var(--purple);
+            background: #f5f3ff;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--purple), var(--purple-2));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 14px rgba(124,58,237,.35);
+        }
+
+    .tab-pending.active {
+        background: linear-gradient(135deg,#D97706,#FBBF24);
+        box-shadow: 0 4px 14px rgba(217,119,6,.3);
+    }
+
+    .tab-proposal.active {
+        background: linear-gradient(135deg,var(--purple-3),var(--purple-4));
+        box-shadow: 0 4px 14px rgba(139,92,246,.35);
+    }
+
+    .tab-accepted.active {
+        background: linear-gradient(135deg,var(--green),#34D399);
+        box-shadow: 0 4px 14px rgba(5,150,105,.3);
+    }
+
+    .tab-rejected.active {
+        background: linear-gradient(135deg,var(--red),#F87171);
+        box-shadow: 0 4px 14px rgba(220,38,38,.25);
+    }
+
+    .tab-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 16px;
+        padding: 0 5px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 700;
+        background: rgba(255,255,255,.28);
+        line-height: 1;
+    }
+
+    .tab:not(.active) .tab-count {
+        background: var(--border-soft);
+        color: var(--muted);
+    }
+
+    /* ══ REQUEST CARD ══ */
+    .req-card {
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+        transition: box-shadow .25s, border-color .25s, transform .2s;
+        overflow: hidden;
+        animation: fadeUp .45s var(--ease) both;
+    }
+
+        .req-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+            border-color: var(--purple-4);
+        }
+
+    .card-bar {
+        height: 3px;
+        width: 100%;
+        display: block;
+    }
+
+    .card-bar-pending {
+        background: linear-gradient(90deg,#D97706,#FCD34D);
+    }
+
+    .card-bar-proposal {
+        background: linear-gradient(90deg,var(--purple),var(--purple-4));
+    }
+
+    .card-bar-accepted {
+        background: linear-gradient(90deg,var(--green),#34D399);
+    }
+
+    .card-bar-rejected {
+        background: linear-gradient(90deg,var(--red),#F87171);
+    }
+
+    .card-bar-default {
+        background: linear-gradient(90deg,var(--purple),var(--purple-3));
+    }
+
+    .req-card-inner {
+        padding: 20px 24px;
+    }
+
+    /* Top row */
+    .req-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .req-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 6px;
+        font-family: var(--f-display);
+        letter-spacing: -.02em;
+    }
+
+    .req-provider {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        flex-wrap: wrap;
+    }
+
+        .req-provider strong {
+            color: var(--text-2);
+            font-weight: 600;
+        }
+
+    /* Provider badge */
+    .provider-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 9px;
+        border-radius: 20px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        font-family: var(--f-display);
+    }
+
+    .provider-team {
+        background: rgba(124,58,237,0.1);
+        color: var(--purple);
+    }
+
+    .provider-company {
+        background: var(--amber-bg);
+        color: var(--amber);
+    }
+
+    /* Status badges */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.69rem;
+        font-weight: 700;
+        white-space: nowrap;
+        font-family: var(--f-display);
+        letter-spacing: .02em;
+    }
+
+        .badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+    .badge-pending {
+        background: var(--amber-bg);
+        color: var(--amber-text);
+    }
+
+        .badge-pending::before {
+            background: var(--amber);
+        }
+
+    .badge-proposal {
+        background: var(--purple-soft);
+        color: var(--purple-2);
+    }
+
+        .badge-proposal::before {
+            background: var(--purple);
+            animation: pulse-dot 1.8s infinite;
+        }
+
+    .badge-accepted {
+        background: var(--green-bg);
+        color: var(--green-text);
+    }
+
+        .badge-accepted::before {
+            background: var(--green);
+        }
+
+    .badge-rejected {
+        background: var(--red-bg);
+        color: var(--red-text);
+    }
+
+        .badge-rejected::before {
+            background: var(--red);
+        }
+
+    .badge-cancelled {
+        background: var(--border-soft);
+        color: var(--muted);
+    }
+
+        .badge-cancelled::before {
+            background: var(--muted);
+        }
+
+    @@keyframes pulse-dot {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1)
+        }
+
+        50% {
+            opacity: .5;
+            transform: scale(.7)
+        }
+    }
+
+    /* Body */
+    .req-body {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-soft);
+    }
+
+    .req-desc {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.7;
+        margin-bottom: 14px;
+    }
+
+    .req-meta {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.77rem;
+        color: var(--muted);
+    }
+
+        .meta-item i {
+            font-size: 12px;
+        }
+
+    .meta-date i {
+        color: var(--purple);
+    }
+
+    .meta-budget i {
+        color: var(--green);
+    }
+
+    .meta-cat i {
+        color: var(--amber);
+    }
+
+    .meta-item strong {
+        color: var(--text-2);
+        font-weight: 600;
+    }
+
+    /* Proposal box */
+    .proposal-box {
+        background: linear-gradient(135deg, rgba(124,58,237,.06), rgba(124,58,237,.03));
+        border: 1.5px solid rgba(124,58,237,.18);
+        border-radius: var(--radius-sm);
+        padding: 18px 20px;
+        margin-top: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .proposal-box::after {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle,rgba(124,58,237,.08),transparent 70%);
+            pointer-events: none;
+        }
+
+    .proposal-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--purple);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-family: var(--f-display);
+    }
+
+    .proposal-stats {
+        display: flex;
+        gap: 0;
+        margin-bottom: 12px;
+        background: rgba(255,255,255,.8);
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(124,58,237,.12);
+        overflow: hidden;
+    }
+
+    .proposal-stat {
+        flex: 1;
+        padding: 10px 14px;
+        text-align: center;
+        border-right: 1px solid rgba(124,58,237,.1);
+    }
+
+        .proposal-stat:last-child {
+            border-right: none;
+        }
+
+    .proposal-stat-val {
+        font-family: var(--f-display);
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--purple);
+        line-height: 1.1;
+        margin-bottom: 3px;
+    }
+
+    .proposal-stat-lbl {
+        font-size: 0.6rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-weight: 600;
+    }
+
+    .proposal-note {
+        font-size: 0.78rem;
+        color: var(--text-2);
+        line-height: 1.6;
+        background: rgba(255,255,255,.8);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        margin-top: 10px;
+        border-left: 3px solid var(--purple);
+    }
+
+    /* Milestones */
+    .ms-list {
+        margin-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .ms-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(255,255,255,.8);
+        border-radius: var(--radius-sm);
+        padding: 9px 12px;
+        font-size: 0.78rem;
+        border: 1px solid rgba(124,58,237,.1);
+        transition: background .15s;
+    }
+
+        .ms-item:hover {
+            background: rgba(255,255,255,1);
+        }
+
+    .ms-item-left {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .ms-num {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--purple), var(--purple-3));
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .ms-name {
+        color: var(--text-2);
+        font-weight: 500;
+    }
+
+    .ms-days {
+        color: var(--muted);
+        font-size: 0.7rem;
+    }
+
+    .ms-amount {
+        font-weight: 700;
+        color: var(--purple);
+        font-family: var(--f-display);
+        font-size: 0.82rem;
+    }
+
+    /* Rejection */
+    .rejection-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        background: var(--red-bg);
+        border: 1px solid rgba(220,38,38,.2);
+        border-radius: var(--radius-sm);
+        padding: 12px 14px;
+        margin-top: 12px;
+        font-size: 0.78rem;
+        color: var(--red-text);
+    }
+
+        .rejection-box i {
+            flex-shrink: 0;
+            font-size: 14px;
+            margin-top: 1px;
+        }
+
+    /* Footer */
+    .req-footer {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border-soft);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .req-id {
+        font-size: 0.71rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .req-id span {
+            display: inline-block;
+            background: var(--off);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2px 7px;
+            font-family: var(--f-display);
+            font-weight: 600;
+            font-size: 0.68rem;
+            color: var(--text-2);
+        }
+
+    .footer-actions {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 18px;
+        border-radius: var(--radius-sm);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1.5px solid transparent;
+        font-family: var(--f-display);
+        transition: all .2s;
+        text-decoration: none;
+        line-height: 1;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg,var(--purple),var(--purple-2));
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(124,58,237,.3);
+    }
+
+        .btn-primary:hover {
+            opacity: .9;
+            transform: translateY(-1px);
+            color: #fff;
+        }
+
+    .btn-success {
+        background: var(--green);
+        color: #fff;
+        border-color: var(--green);
+        box-shadow: 0 4px 12px rgba(5,150,105,.22);
+    }
+
+        .btn-success:hover {
+            background: #047857;
+            transform: translateY(-1px);
+            color: #fff;
+        }
+
+    .btn-danger {
+        background: var(--red);
+        color: #fff;
+        border-color: var(--red);
+    }
+
+        .btn-danger:hover {
+            background: #B91C1C;
+            transform: translateY(-1px);
+            color: #fff;
+        }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--text-2);
+        border-color: var(--border);
+    }
+
+        .btn-outline:hover {
+            background: var(--off);
+            border-color: var(--purple);
+            color: var(--purple);
+        }
+
+    .btn-ghost-danger {
+        background: transparent;
+        color: var(--red);
+        border-color: rgba(220,38,38,.3);
+    }
+
+        .btn-ghost-danger:hover {
+            background: var(--red-bg);
+            border-color: var(--red);
+        }
+
+    /* Empty */
+    .empty-state {
+        text-align: center;
+        padding: 60px 24px;
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        animation: fadeUp .4s var(--ease) .12s both;
+    }
+
+    .empty-icon {
+        width: 68px;
+        height: 68px;
+        border-radius: 18px;
+        background: linear-gradient(135deg,rgba(124,58,237,.1),rgba(167,139,250,.08));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+        font-size: 28px;
+        color: var(--purple);
+    }
+
+    .empty-state h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 7px;
+        color: var(--text);
+        font-family: var(--f-display);
+    }
+
+    .empty-state p {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-bottom: 20px;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+    }
+
+    .empty-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Modal */
+    .modal-content {
+        border-radius: var(--radius);
+        border: 1.5px solid var(--border);
+        font-family: var(--f-body);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid var(--border-soft);
+        padding: 18px 24px;
+    }
+
+    .modal-title {
+        font-family: var(--f-display);
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .modal-body {
+        padding: 20px 24px;
+    }
+
+    .modal-footer {
+        border-top: 1px solid var(--border-soft);
+        padding: 14px 24px;
+    }
+
+    .form-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--text-2);
+        margin-bottom: 6px;
+        display: block;
+        font-family: var(--f-display);
+    }
+
+    .form-control {
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 9px 12px;
+        font-size: 0.84rem;
+        font-family: inherit;
+        outline: none;
+        width: 100%;
+        transition: border-color .15s, box-shadow .15s;
+        color: var(--text);
+        background: var(--off);
+    }
+
+        .form-control:focus {
+            border-color: var(--purple);
+            box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+            background: #fff;
+        }
+
+    /* Toast */
+    .toast-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .toast {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 12px 18px;
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        font-weight: 500;
+        box-shadow: 0 8px 24px rgba(13,17,23,.15);
+        color: #fff;
+        min-width: 260px;
+        max-width: 340px;
+        font-family: var(--f-display);
+        animation: toast-in .3s cubic-bezier(.34,1.56,.64,1);
+    }
+
+        .toast.out {
+            animation: toast-out .3s ease forwards;
+        }
+
+    .toast-success {
+        background: var(--green);
+    }
+
+    .toast-error {
+        background: var(--red);
+    }
+
+    .toast-info {
+        background: linear-gradient(135deg,var(--purple),var(--purple-2));
+    }
+
+    .toast i {
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    @@keyframes toast-in {
+        from {
+            opacity: 0;
+            transform: translateY(16px) scale(.95)
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1)
+        }
+    }
+
+    @@keyframes toast-out {
+        from {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        to {
+            opacity: 0;
+            transform: translateY(8px)
+        }
+    }
+
+    /* Animations */
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px)
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0)
+        }
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .hero-banner {
+            padding: 22px 18px;
+        }
+
+        .hero-title {
+            font-size: 1.25rem;
+        }
+
+        .proposal-stats {
+            flex-wrap: wrap;
+        }
+
+        .proposal-stat {
+            min-width: 50%;
+        }
+
+            .proposal-stat:nth-child(3) {
+                border-top: 1px solid rgba(124,58,237,.1);
+                border-right: none;
+            }
+
+        .req-card-inner {
+            padding: 16px 18px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .tabs-wrap {
+            gap: 4px;
+        }
+
+        .tab {
+            padding: 6px 12px;
+            font-size: 0.72rem;
+        }
+
+        .req-top {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .hero-actions .hb-ghost {
+            display: none;
+        }
+    }
+</style>
+
+<div class="rw">
+
+    <!-- ══ HERO ══ -->
+    <div class="hero-banner">
+        <div class="hero-grid-pattern"></div>
+        <div class="hero-inner">
+            <div>
+                <div class="hero-eyebrow"><span class="pill-dot"></span> Project Requests</div>
+                <div class="hero-title">My <span class="grad">Requests</span></div>
+                <div class="hero-sub">Track your project requests and incoming proposals</div>
+                <div class="hero-actions">
+                    <a href="@Url.Action("Index", "TeamRooms", new { area = "TeamRooms" })" class="hero-btn hb-primary">
+                        <i class="bi bi-people-fill"></i> Browse Teams
+                    </a>
+                    <a href="@Url.Action("Index", "ClientDashboard", new { area = "Identity" })" class="hero-btn hb-ghost">
+                        <i class="bi bi-grid-fill"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ TABS ══ -->
+    <div class="tabs-wrap">
+        <a href="?status=all" class="tab @(ViewBag.CurrentStatus == "all" || ViewBag.CurrentStatus == null ? "active" : "")">
+            All <span class="tab-count">@Model.Count()</span>
+        </a>
+        <a href="?status=pending" class="tab tab-pending @(ViewBag.CurrentStatus == "pending" ? "active" : "")">
+            <i class="bi bi-clock"></i> Pending
+            <span class="tab-count">@Model.Count(r => r.Status == "Pending")</span>
+        </a>
+        <a href="?status=proposalsent" class="tab tab-proposal @(ViewBag.CurrentStatus == "proposalsent" ? "active" : "")">
+            <i class="bi bi-file-earmark-text"></i> Proposals
+            <span class="tab-count">@Model.Count(r => r.Status == "ProposalSent")</span>
+        </a>
+        <a href="?status=accepted" class="tab tab-accepted @(ViewBag.CurrentStatus == "accepted" ? "active" : "")">
+            <i class="bi bi-check-circle"></i> Accepted
+            <span class="tab-count">@Model.Count(r => r.Status == "Accepted")</span>
+        </a>
+        <a href="?status=rejected" class="tab tab-rejected @(ViewBag.CurrentStatus == "rejected" ? "active" : "")">
+            <i class="bi bi-x-circle"></i> Rejected
+            <span class="tab-count">@Model.Count(r => r.Status == "Rejected")</span>
+        </a>
+    </div>
+
+    @Html.AntiForgeryToken()
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+            <h3>No requests yet</h3>
+            <p>Browse available teams or companies and send your first project request to get started.</p>
+            <div class="empty-actions">
+                <a href="@Url.Action("Index", "TeamRooms", new { area = "TeamRooms" })" class="btn btn-outline">
+                    <i class="bi bi-people-fill"></i> Browse Teams
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        int i = 0;
+        @foreach (var req in Model)
+        {
+            i++;
+            var badgeClass = req.Status switch
+            {
+                "Pending" => "badge-pending",
+                "ProposalSent" => "badge-proposal",
+                "Accepted" => "badge-accepted",
+                "Rejected" => "badge-rejected",
+                _ => "badge-cancelled"
+            };
+            var badgeLabel = req.Status == "ProposalSent" ? "Proposal Received" : req.Status;
+            var isCompany = req.CompanyId.HasValue;
+            var barClass = req.Status switch
+            {
+                "Pending" => "card-bar-pending",
+                "ProposalSent" => "card-bar-proposal",
+                "Accepted" => "card-bar-accepted",
+                "Rejected" => "card-bar-rejected",
+                _ => "card-bar-default"
+            };
+
+            <div class="req-card" style="animation-delay:@(i * 0.05)s">
+                <span class="card-bar @barClass"></span>
+                <div class="req-card-inner">
+                    <div class="req-top">
+                        <div>
+                            <div class="req-title">@req.ProjectName</div>
+                            <div class="req-provider">
+                                @if (isCompany && req.Company != null)
+                                {
+                                    <span class="provider-badge provider-company"><i class="bi bi-building"></i> Company</span>
+                                    <strong>@req.Company.CompanyName</strong>
+                                    @if (!string.IsNullOrEmpty(req.SelectedServiceTier))
+                                    {
+                                        <span style="font-size:0.7rem;color:var(--amber);font-weight:600">· @req.SelectedServiceTier</span>
+                                    }
+                                }
+                                else if (!isCompany && req.TeamRoom != null)
+                                {
+                                    <span class="provider-badge provider-team"><i class="bi bi-people-fill"></i> Team</span>
+                                    <strong>@req.TeamRoom.TeamName</strong>
+                                    @if (req.TeamRoom.TeamLeader?.User != null)
+                                    {
+                                        <span>· @req.TeamRoom.TeamLeader.User.FullName</span>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <span class="badge @badgeClass">@badgeLabel</span>
+                    </div>
+
+                    <div class="req-body">
+                        @if (!string.IsNullOrWhiteSpace(req.Description))
+                        {
+                            <p class="req-desc">@req.Description</p>
+                        }
+                        <div class="req-meta">
+                            <div class="meta-item meta-date"><i class="bi bi-calendar3"></i> Sent: <strong>@req.CreatedAt.ToString("MMM dd, yyyy")</strong></div>
+                            @if (req.ClientBudget.HasValue)
+                            {
+                                <div class="meta-item meta-budget"><i class="bi bi-coin"></i> Budget: <strong>$@req.ClientBudget.Value.ToString("N0")</strong></div>
+                            }
+                            @if (!string.IsNullOrEmpty(req.Category))
+                            {
+                                <div class="meta-item meta-cat"><i class="bi bi-tag"></i> <strong>@req.Category</strong></div>
+                            }
+                        </div>
+
+                        @if (req.Status == "ProposalSent" && req.ProposedBudget.HasValue)
+                        {
+                            var provName = isCompany ? req.Company?.CompanyName : req.TeamRoom?.TeamName;
+                            <div class="proposal-box">
+                                <div class="proposal-title"><i class="bi bi-file-earmark-check-fill"></i> Proposal from @provName</div>
+                                <div class="proposal-stats">
+                                    <div class="proposal-stat">
+                                        <div class="proposal-stat-val">$@req.ProposedBudget.Value.ToString("N0")</div>
+                                        <div class="proposal-stat-lbl">Total Budget</div>
+                                    </div>
+                                    <div class="proposal-stat">
+                                        <div class="proposal-stat-val">@(req.ProposedMilestones?.Count ?? 0)</div>
+                                        <div class="proposal-stat-lbl">Milestones</div>
+                                    </div>
+                                    <div class="proposal-stat">
+                                        <div class="proposal-stat-val">@(req.EstimatedEndDate.HasValue ? (req.EstimatedEndDate.Value - DateTime.UtcNow).Days + "d" : "—")</div>
+                                        <div class="proposal-stat-lbl">Est. Duration</div>
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(req.ProposalNote))
+                                {
+                                    <div class="proposal-note"><i class="bi bi-chat-quote"></i> @req.ProposalNote</div>
+                                }
+                                @if (req.ProposedMilestones != null && req.ProposedMilestones.Any())
+                                {
+                                    <div class="ms-list">
+                                        @foreach (var ms in req.ProposedMilestones.OrderBy(m => m.DisplayOrder))
+                                        {
+                                            <div class="ms-item">
+                                                <div class="ms-item-left">
+                                                    <div class="ms-num">@ms.DisplayOrder</div>
+                                                    <span class="ms-name">@ms.Title</span>
+                                                    <span class="ms-days">· @ms.DaysFromStart days</span>
+                                                </div>
+                                                <span class="ms-amount">$@ms.Amount.ToString("N0")</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (req.Status == "Rejected" && !string.IsNullOrEmpty(req.RejectionReason))
+                        {
+                            <div class="rejection-box">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <div><strong>Rejection reason:</strong> @req.RejectionReason</div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="req-footer">
+                        <div class="req-id">
+                            <span>#@req.RequestId</span>
+                            @if (req.RespondedAt.HasValue)
+                            {
+                                <span style="color:var(--muted)">· Responded @req.RespondedAt.Value.ToString("MMM dd")</span>
+                            }
+                        </div>
+                        <div class="footer-actions">
+                            @if (req.Status == "ProposalSent")
+                            {
+                                <button class="btn btn-success" onclick="acceptProposal(@req.RequestId,'@Html.Raw(req.ProjectName.Replace("'", "\\'"))',@(req.CompanyId.HasValue ? "true" : "false"))">
+                                    <i class="bi bi-check-lg"></i> Accept
+                                </button>
+                                <button class="btn btn-danger" onclick="showRejectModal(@req.RequestId)">
+                                    <i class="bi bi-x-lg"></i> Decline
+                                </button>
+                            }
+                            else if (req.Status == "Accepted" && req.ProjectId.HasValue)
+                            {
+                                <a href="@Url.Action("Details", "Projects", new { area = "TeamRooms", id = req.ProjectId })" class="btn btn-primary">
+                                    <i class="bi bi-eye"></i> View Project
+                                </a>
+                            }
+                            else if (req.Status == "Pending")
+                            {
+                                <button class="btn btn-ghost-danger" onclick="cancelRequest(@req.RequestId)">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-x-circle" style="color:var(--red);margin-right:8px"></i>Decline Proposal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="rejectRequestId">
+                <label class="form-label">Reason <span style="color:var(--muted);font-weight:400">(Optional)</span></label>
+                <textarea class="form-control" id="rejectReason" rows="3" placeholder="Share your reason with the provider…"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmRejectBtn"><i class="bi bi-x-circle"></i> Decline</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showToast(msg, type) {
+            var icons = { success:'bi-check-circle-fill', error:'bi-x-circle-fill', info:'bi-info-circle-fill' };
+            var c = document.getElementById('toastContainer');
+            var t = document.createElement('div');
+            t.className = 'toast toast-' + (type||'info');
+            t.innerHTML = '<i class="bi '+(icons[type]||icons.info)+'"></i><span>'+msg+'</span>';
+            c.appendChild(t);
+            setTimeout(function(){ t.classList.add('out'); setTimeout(function(){ t.remove(); },300); }, 3500);
+        }
+        (function(){
+            var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            function post(url,data,cb){
+                fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','RequestVerificationToken':token},body:new URLSearchParams(data)})
+                .then(function(r){return r.json();}).then(function(r){showToast(r.message||'Done',r.success?'success':'error');if(r.success&&cb)cb(r);}).catch(function(){showToast('Server error','error');});
+            }
+            window.acceptProposal=function(requestId,projectName,isCompany){
+                if(!confirm('Accept proposal for "'+projectName+'"?\nThis will create the project and start work.'))return;
+                var url=isCompany?'@Url.Action("AcceptCompanyProposal", "Projects", new { area = "TeamRooms" })':'@Url.Action("AcceptProposal", "Projects", new { area = "TeamRooms" })';
+                post(url,{requestId:requestId},function(r){if(r.projectId){setTimeout(function(){window.location.href='@Url.Action("Details", "Projects", new { area = "TeamRooms" })'+'/'+r.projectId;},1000);}else{setTimeout(function(){location.reload();},1000);}});
+            };
+            window.showRejectModal=function(requestId){document.getElementById('rejectRequestId').value=requestId;document.getElementById('rejectReason').value='';new bootstrap.Modal(document.getElementById('rejectModal')).show();};
+            document.getElementById('confirmRejectBtn').addEventListener('click',function(){
+                var id=document.getElementById('rejectRequestId').value;
+                var reason=document.getElementById('rejectReason').value;
+                post('@Url.Action("RejectProposal", "Projects", new { area = "TeamRooms" })',{requestId:id,reason:reason},function(){bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();setTimeout(function(){location.reload();},800);});
+            });
+            window.cancelRequest=function(requestId){if(!confirm('Cancel this request?'))return;post('@Url.Action("CancelRequest", "Projects", new { area = "TeamRooms" })',{requestId:requestId},function(){setTimeout(function(){location.reload();},800);});};
+        })();
+    </script>
+}

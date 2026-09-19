@@ -1,0 +1,89 @@
+﻿@model IEnumerable<Scalaverse.Entitys.Models.Project>
+
+@{
+    ViewData["Title"] = "Company Projects";
+    var currentStatus = ViewBag.CurrentStatus ?? "all";
+    var counts = ViewBag.StatusCounts;
+}
+
+<h2>Company Projects</h2>
+<hr />
+
+<!-- Filter Tabs -->
+<div style="margin-bottom: 20px;">
+    <a href="@Url.Action("CompanyProjects", new { status = "all" })"
+           style="padding: 10px 20px; margin-right: 10px; text-decoration: none; border-radius: 4px; @(currentStatus == "all" ? "background: #007bff; color: white;" : "background: #e9ecef; color: #333;")">
+        All (@counts.All)
+    </a>
+    <a href="@Url.Action("CompanyProjects", new { status = "active" })"
+           style="padding: 10px 20px; margin-right: 10px; text-decoration: none; border-radius: 4px; @(currentStatus == "active" ? "background: #007bff; color: white;" : "background: #e9ecef; color: #333;")">
+        Active (@counts.Active)
+    </a>
+    <a href="@Url.Action("CompanyProjects", new { status = "inprogress" })"
+           style="padding: 10px 20px; margin-right: 10px; text-decoration: none; border-radius: 4px; @(currentStatus == "inprogress" ? "background: #007bff; color: white;" : "background: #e9ecef; color: #333;")">
+        In Progress (@counts.InProgress)
+    </a>
+    <a href="@Url.Action("CompanyProjects", new { status = "completed" })"
+           style="padding: 10px 20px; margin-right: 10px; text-decoration: none; border-radius: 4px; @(currentStatus == "completed" ? "background: #28a745; color: white;" : "background: #e9ecef; color: #333;")">
+        Completed (@counts.Completed)
+    </a>
+</div>
+
+<!-- Projects List -->
+@if (Model.Any())
+{
+    foreach (var project in Model)
+    {
+        <div style="border: 1px solid #ddd; padding: 20px; margin-bottom: 15px; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 10px 0;">@project.ProjectName</h4>
+                    <p style="margin: 0 0 10px 0; color: #666;">
+                        <strong>Client:</strong> @project.Client.User.FullName |
+                        <strong>Budget:</strong> @project.Budget.ToString("C0")
+                    </p>
+                    <p style="margin: 0 0 10px 0; color: #666;">@project.Description</p>
+                </div>
+                <div>
+                    <span style="padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;
+                        @(project.Status == "Completed" ? "background: #d4edda; color: #155724;" :
+                                                    project.Status == "Active" ? "background: #cfe2ff; color: #084298;" :
+                                                    project.Status == "InProgress" ? "background: #cff4fc; color: #055160;" :
+                                                    "background: #e9ecef; color: #333;")">
+                        @project.Status
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div style="margin: 15px 0;">
+                <div style="background: #e9ecef; height: 20px; border-radius: 10px; overflow: hidden;">
+                    <div style="background: #28a745; height: 100%; width: @(project.ProgressPercentage)%; transition: width 0.3s;"></div>
+                </div>
+                <small style="color: #666;">Progress: @project.ProgressPercentage%</small>
+            </div>
+            
+            <!-- Milestones -->
+            @if (project.Milestones != null && project.Milestones.Any())
+            {
+                <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;">
+                    <strong>Milestones:</strong>
+                    @project.Milestones.Count(m => m.Status == "Approved" || m.Status == "Completed") / @project.Milestones.Count completed
+                </p>
+            }
+            
+            <div style="margin-top: 15px;">
+                <a href="/TeamRooms/Projects/Details/@project.ProjectId"
+                       style="padding: 8px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 4px;">
+                    View Details →
+                </a>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div style="padding: 40px; text-align: center; background: #f8f9fa; border-radius: 8px;">
+        <p style="font-size: 18px; color: #666; margin: 0;">No projects found.</p>
+    </div>
+}

@@ -1,0 +1,363 @@
+﻿
+@model ScalaVerse.ViewModel.Admin_VM.StuckProjectsViewModel
+@{
+    ViewData["Title"] = "Stuck Projects";
+}
+
+<style>
+    :root {
+        --navy: #0A0E1A;
+        --purple: #7C3AED;
+        --purple-2: #6D28D9;
+        --purple-5: #EDE9FE;
+        --white: #FFFFFF;
+        --off: #F9FAFB;
+        --border: #E5E7EB;
+        --border-2: #F3F4F6;
+        --text: #0F172A;
+        --text-2: #374151;
+        --muted: #6B7280;
+        --amber: #D97706;
+        --amber-bg: #FFFBEB;
+        --green: #059669;
+        --green-bg: #ECFDF5;
+        --red: #DC2626;
+        --red-bg: #FEF2F2;
+        --f-display: 'Plus Jakarta Sans', sans-serif;
+        --f-body: 'Inter', sans-serif;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --radius: 14px;
+        --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+        --shadow-md: 0 8px 32px rgba(0,0,0,0.12);
+    }
+
+    /* Header */
+    .page-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 14px;
+        animation: fadeUp 0.4s var(--ease) both;
+    }
+
+    .page-eyebrow {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--amber);
+        margin-bottom: 4px;
+    }
+
+    .page-title {
+        font-family: var(--f-display);
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--text);
+    }
+
+    .btn-detect {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-family: var(--f-body);
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #fff;
+        background: var(--amber);
+        border: none;
+        padding: 11px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s var(--ease);
+        box-shadow: 0 4px 12px rgba(217,119,6,0.3);
+    }
+
+        .btn-detect:hover {
+            background: #B45309;
+            transform: translateY(-1px);
+        }
+
+    /* Stat banner */
+    .stat-banner {
+        background: var(--navy);
+        border-radius: var(--radius);
+        padding: 22px 28px;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        position: relative;
+        overflow: hidden;
+        animation: fadeUp 0.4s var(--ease) 0.05s both;
+    }
+
+        .stat-banner::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -30px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(217,119,6,0.2) 0%, transparent 65%);
+        }
+
+    .stat-icon-wrap {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        flex-shrink: 0;
+        background: rgba(217,119,6,0.2);
+        border: 1px solid rgba(217,119,6,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 2;
+    }
+
+        .stat-icon-wrap i {
+            font-size: 24px;
+            color: #FCD34D;
+        }
+
+    .stat-num {
+        font-family: var(--f-display);
+        font-size: 2rem;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        position: relative;
+        z-index: 2;
+    }
+
+    .stat-label {
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.45);
+        margin-top: 2px;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 64px 24px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        animation: fadeUp 0.4s var(--ease) 0.1s both;
+    }
+
+    .empty-icon-wrap {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: var(--green-bg);
+        margin: 0 auto 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .empty-icon-wrap i {
+            font-size: 28px;
+            color: var(--green);
+        }
+
+    .empty-title {
+        font-family: var(--f-display);
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 6px;
+    }
+
+    .empty-sub {
+        font-size: 0.85rem;
+        color: var(--muted);
+    }
+
+    /* Table */
+    .table-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        animation: fadeUp 0.4s var(--ease) 0.1s both;
+    }
+
+    .stuck-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .stuck-table thead tr {
+            background: var(--off);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stuck-table th {
+            padding: 12px 18px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            text-align: left;
+        }
+
+        .stuck-table tbody tr {
+            border-bottom: 1px solid var(--border-2);
+            transition: background 0.15s;
+        }
+
+            .stuck-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .stuck-table tbody tr:hover {
+                background: var(--off);
+            }
+
+        .stuck-table td {
+            padding: 14px 18px;
+            font-size: 0.84rem;
+            color: var(--text-2);
+            vertical-align: middle;
+        }
+
+    .proj-name {
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .days-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 100px;
+        background: var(--red-bg);
+        color: var(--red);
+    }
+
+    .reason-tag {
+        display: inline-block;
+        font-size: 0.78rem;
+        color: var(--text-2);
+        background: var(--amber-bg);
+        border: 1px solid rgba(217,119,6,0.2);
+        padding: 4px 10px;
+        border-radius: 7px;
+    }
+
+    .budget-val {
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .stuck-table th:nth-child(3), .stuck-table td:nth-child(3) {
+            display: none;
+        }
+    }
+
+    @@media (max-width: 560px) {
+        .page-head {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .btn-detect {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .stuck-table th:nth-child(5), .stuck-table td:nth-child(5) {
+            display: none;
+        }
+    }
+</style>
+
+<!-- Header -->
+<div class="page-head">
+    <div>
+        <div class="page-eyebrow">Admin Panel</div>
+        <div class="page-title">Stuck Projects</div>
+    </div>
+    <form method="post" action="@Url.Action("DetectStuckProjects")">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn-detect">
+            <i class="bi bi-search"></i> Auto-Detect Stuck Projects
+        </button>
+    </form>
+</div>
+
+<!-- Stat Banner -->
+<div class="stat-banner">
+    <div class="stat-icon-wrap"><i class="bi bi-exclamation-octagon-fill"></i></div>
+    <div>
+        <div class="stat-num">@Model.TotalStuck</div>
+        <div class="stat-label">Total stuck projects requiring attention</div>
+    </div>
+</div>
+
+@if (!Model.StuckProjects.Any())
+{
+    <div class="empty-state">
+        <div class="empty-icon-wrap"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="empty-title">No stuck projects found</div>
+        <div class="empty-sub">All active projects are progressing normally</div>
+    </div>
+}
+else
+{
+    <div class="table-card">
+        <table class="stuck-table">
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Client</th>
+                    <th>Provider</th>
+                    <th>Days Stuck</th>
+                    <th>Reason</th>
+                    <th>Budget</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in Model.StuckProjects)
+                {
+                    <tr>
+                        <td><span class="proj-name">@project.ProjectName</span></td>
+                        <td>@project.ClientName</td>
+                        <td>@project.ProviderName</td>
+                        <td><span class="days-pill"><i class="bi bi-clock-fill" style="font-size:10px"></i> @project.DaysSinceActivity days</span></td>
+                        <td><span class="reason-tag">@project.StuckReason</span></td>
+                        <td><span class="budget-val">$@project.Budget.ToString("N2")</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
