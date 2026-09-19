@@ -1,0 +1,499 @@
+﻿@model ScalaVerse.ViewModel.Profile_VM.EditProfileViewModel
+@{
+    ViewData["Title"] = "Edit Profile";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<style>
+    :root {
+        --navy: #0A0E1A;
+        --purple: #7C3AED;
+        --purple-2: #6D28D9;
+        --purple-3: #8B5CF6;
+        --purple-4: #A78BFA;
+        --purple-5: #EDE9FE;
+        --white: #FFFFFF;
+        --off: #F9FAFB;
+        --border: #E5E7EB;
+        --border-2: #F3F4F6;
+        --text: #0F172A;
+        --text-2: #374151;
+        --muted: #6B7280;
+        --green: #059669;
+        --green-bg: #ECFDF5;
+        --red: #DC2626;
+        --f-display: 'Plus Jakarta Sans',sans-serif;
+        --f-body: 'Inter',sans-serif;
+        --ease: cubic-bezier(0.16,1,0.3,1);
+        --radius: 12px;
+        --radius-lg: 16px;
+        --shadow: 0 1px 3px rgba(0,0,0,0.07),0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ep-layout {
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 20px;
+        align-items: start;
+    }
+
+    /* Hero */
+    .ep-hero {
+        background: var(--navy);
+        border-radius: var(--radius-lg);
+        padding: 24px 28px;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .ep-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 70% 80% at 100% 0%,rgba(124,58,237,0.18) 0%,transparent 60%);
+        }
+
+    .ep-grid-bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
+        background-size: 44px 44px;
+    }
+
+    .ep-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .ep-hero-title {
+        font-family: var(--f-display);
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -.02em;
+    }
+
+    .ep-hero-sub {
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.4);
+        margin-top: 4px;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        padding: 8px 14px;
+        border-radius: 9px;
+        text-decoration: none;
+        transition: all .2s;
+    }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+        }
+
+    /* Section cards */
+    .ep-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        margin-bottom: 16px;
+    }
+
+        .ep-card:last-child {
+            margin-bottom: 0;
+        }
+
+    .ep-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border-2);
+        font-family: var(--f-display);
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+        .ep-head i {
+            color: var(--purple);
+            font-size: 15px;
+        }
+
+    .ep-body {
+        padding: 24px;
+    }
+
+    /* Form controls */
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+    .form-lbl {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 6px;
+    }
+
+        .form-lbl span {
+            color: var(--red);
+        }
+
+    .form-ctrl {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        background: var(--off);
+        color: var(--text);
+        font-family: var(--f-body);
+        font-size: 0.88rem;
+        font-weight: 500;
+        padding: 11px 14px;
+        outline: none;
+        transition: all .2s;
+        resize: none;
+    }
+
+        .form-ctrl:focus {
+            border-color: var(--purple);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.08);
+        }
+
+    .form-error {
+        font-size: 0.75rem;
+        color: var(--red);
+        margin-top: 4px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .val-summary {
+        background: #FEF2F2;
+        border: 1px solid rgba(220,38,38,0.2);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        font-size: 0.82rem;
+        color: var(--red);
+    }
+
+    /* Action buttons */
+    .action-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 4px;
+    }
+
+    .btn-save {
+        flex: 1;
+        padding: 12px;
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-family: var(--f-body);
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .2s var(--ease);
+        box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+        .btn-save:hover {
+            background: var(--purple-2);
+            transform: translateY(-1px);
+        }
+
+    .btn-cancel {
+        padding: 12px 20px;
+        background: transparent;
+        color: var(--muted);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: var(--f-body);
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-cancel:hover {
+            border-color: var(--purple);
+            color: var(--purple);
+        }
+
+    .tip-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        position: sticky;
+        top: 20px;
+    }
+
+    .tip-head {
+        background: linear-gradient(135deg,var(--navy),#1a1040);
+        padding: 16px 20px;
+    }
+
+    .tip-title {
+        font-family: var(--f-display);
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #fff;
+    }
+
+    .tip-sub {
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.4);
+        margin-top: 3px;
+    }
+
+    .tip-body {
+        padding: 16px;
+    }
+
+    .tip-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 14px;
+        font-size: 0.8rem;
+        color: var(--text-2);
+        line-height: 1.5;
+    }
+
+        .tip-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .tip-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: var(--purple-5);
+        color: var(--purple);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    @@media(max-width:900px) {
+        .ep-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .tip-card {
+            position: static;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media(max-width:600px) {
+        .ep-hero {
+            padding: 20px;
+        }
+
+        .ep-hero-inner {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .action-row {
+            flex-direction: column;
+        }
+
+        .btn-cancel {
+            justify-content: center;
+        }
+    }
+</style>
+
+<!-- Hero -->
+<div class="ep-hero">
+    <div class="ep-grid-bg"></div>
+    <div class="ep-hero-inner">
+        <div>
+            <div class="ep-hero-title">Edit Profile</div>
+            <div class="ep-hero-sub">Keep your information up to date</div>
+        </div>
+        <a href="@Url.Action("ViewProfile", "ClientDashboard", new { area = "Identity" })" class="btn-back">
+            <i class="bi bi-arrow-left"></i> View Profile
+        </a>
+    </div>
+</div>
+
+<div class="ep-layout">
+    <div>
+        <form asp-action="EditProfile" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="val-summary"></div>
+
+            <!-- Personal Info -->
+            <div class="ep-card">
+                <div class="ep-head"><i class="bi bi-person-fill"></i> Personal Information</div>
+                <div class="ep-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-lbl">Full Name <span>*</span></label>
+                            <input asp-for="FullName" class="form-ctrl" placeholder="Your full name" />
+                            <span asp-validation-for="FullName" class="form-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl">Email <span>*</span></label>
+                            <input asp-for="Email" class="form-ctrl" placeholder="your@email.com" />
+                            <span asp-validation-for="Email" class="form-error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-lbl">Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-ctrl" placeholder="+1 234 567 8900" />
+                        <span asp-validation-for="PhoneNumber" class="form-error"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Company Info -->
+            <div class="ep-card">
+                <div class="ep-head"><i class="bi bi-building"></i> Company Information</div>
+                <div class="ep-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-lbl">Company Name</label>
+                            <input asp-for="CompanyName" class="form-ctrl" placeholder="Your company" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl">Industry</label>
+                            <input asp-for="Industry" class="form-ctrl" placeholder="e.g. Technology, Marketing" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-lbl">Company Size</label>
+                        <input asp-for="CompanySize" class="form-ctrl" placeholder="e.g. 1-10, 11-50, 51-200" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-lbl">Bio</label>
+                        <textarea asp-for="Bio" class="form-ctrl" rows="4"
+                                  placeholder="Tell teams about your company, what you do, and what you're looking for…"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="ep-card">
+                <div class="ep-head"><i class="bi bi-geo-alt-fill"></i> Location</div>
+                <div class="ep-body">
+                    <div class="form-group">
+                        <label class="form-lbl">Address</label>
+                        <input asp-for="Address" class="form-ctrl" placeholder="Street address" />
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-lbl">City</label>
+                            <input asp-for="City" class="form-ctrl" placeholder="City" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl">Country</label>
+                            <input asp-for="Country" class="form-ctrl" placeholder="Country" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-row">
+                <a href="@Url.Action("ViewProfile", "ClientDashboard", new { area = "Identity" })" class="btn-cancel">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+                <button type="submit" class="btn-save">
+                    <i class="bi bi-check-circle-fill"></i> Save Changes
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Tips Sidebar -->
+    <div>
+        <div class="tip-card">
+            <div class="tip-head">
+                <div class="tip-title">Profile Tips</div>
+                <div class="tip-sub">Attract better teams</div>
+            </div>
+            <div class="tip-body">
+                <div class="tip-item">
+                    <div class="tip-icon"><i class="bi bi-building"></i></div>
+                    <div>Add your company name and industry — teams tailor proposals based on this.</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon"><i class="bi bi-file-text-fill"></i></div>
+                    <div>Write a bio that explains your business and what kind of work you need done.</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                    <div>Adding your location helps teams understand your timezone and market.</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon"><i class="bi bi-patch-check-fill"></i></div>
+                    <div>Complete profiles get faster responses and more professional proposals.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

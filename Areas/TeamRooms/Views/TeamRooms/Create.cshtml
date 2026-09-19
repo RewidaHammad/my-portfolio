@@ -1,0 +1,625 @@
+﻿
+
+@model ScalaVerse.ViewModel.CreateTeamRoomViewModel
+
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Create Team Room";
+}
+
+<style>
+    :root {
+        --navy: #0A0E1A;
+        --purple: #7C3AED;
+        --purple-2: #6D28D9;
+        --purple-3: #8B5CF6;
+        --purple-4: #A78BFA;
+        --purple-soft: rgba(124,58,237,0.08);
+        --purple-glow: rgba(124,58,237,0.2);
+        --white: #FFFFFF;
+        --off: #F8F9FC;
+        --border: rgba(0,0,0,0.07);
+        --border-2: rgba(0,0,0,0.1);
+        --text: #0D1117;
+        --text-2: #374151;
+        --muted: #6B7280;
+        --green: #059669;
+        --red: #DC2626;
+        --f-display: 'Plus Jakarta Sans',sans-serif;
+        --f-body: 'Inter',sans-serif;
+        --ease: cubic-bezier(0.16,1,0.3,1);
+        --radius: 16px;
+        --shadow: 0 4px 16px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: var(--f-body);
+        background: var(--off);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .page-head {
+        margin-bottom: 28px;
+    }
+
+    .page-title {
+        font-family: var(--f-display);
+        font-size: 1.7rem;
+        font-weight: 800;
+        letter-spacing: -.03em;
+        color: var(--text);
+    }
+
+    .page-sub {
+        font-size: .85rem;
+        color: var(--muted);
+        margin-top: 4px;
+    }
+
+    .form-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 24px;
+        align-items: start;
+    }
+
+    /* Section card */
+    .section-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+        .section-card:last-child {
+            margin-bottom: 0;
+        }
+
+    .section-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(135deg,#fafbff,var(--white));
+    }
+
+        .section-head i {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--purple-soft);
+            color: var(--purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+    .section-title {
+        font-family: var(--f-display);
+        font-size: .95rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .section-body {
+        padding: 24px;
+    }
+
+    /* Form controls */
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+    .form-lbl {
+        display: block;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 6px;
+    }
+
+        .form-lbl span {
+            color: var(--red);
+        }
+
+    .form-input, .form-textarea, .form-select {
+        width: 100%;
+        border: 1.5px solid var(--border-2);
+        border-radius: 10px;
+        background: var(--off);
+        color: var(--text);
+        font-family: var(--f-body);
+        font-size: .88rem;
+        font-weight: 500;
+        padding: 10px 14px;
+        outline: none;
+        transition: all .2s;
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: var(--purple);
+            background: var(--white);
+            box-shadow: 0 0 0 3px var(--purple-soft);
+        }
+
+    .form-error {
+        font-size: .75rem;
+        color: var(--red);
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    /* Skills */
+    .skills-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .skill-input-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .skill-input-row .form-input {
+            flex: 1;
+        }
+
+    .btn-remove-skill {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border-2);
+        background: transparent;
+        color: var(--muted);
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all .15s;
+        flex-shrink: 0;
+    }
+
+        .btn-remove-skill:hover {
+            border-color: var(--red);
+            color: var(--red);
+            background: #FEF2F2;
+        }
+
+    .btn-add {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border: 1.5px dashed var(--border-2);
+        border-radius: 10px;
+        background: transparent;
+        color: var(--muted);
+        font-family: var(--f-body);
+        font-size: .82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s;
+        margin-top: 4px;
+    }
+
+        .btn-add:hover {
+            border-color: var(--purple);
+            color: var(--purple);
+            background: var(--purple-soft);
+        }
+
+    /* Members */
+    .member-block {
+        background: var(--off);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        position: relative;
+    }
+
+        .member-block:last-child {
+            margin-bottom: 0;
+        }
+
+    .member-num {
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--purple);
+        margin-bottom: 12px;
+    }
+
+    .btn-remove-member {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: 1.5px solid var(--border-2);
+        background: var(--white);
+        color: var(--muted);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all .15s;
+    }
+
+        .btn-remove-member:hover {
+            border-color: var(--red);
+            color: var(--red);
+            background: #FEF2F2;
+        }
+
+    /* Sidebar */
+    .sidebar-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        position: sticky;
+        top: 20px;
+    }
+
+    .sidebar-head {
+        background: linear-gradient(135deg,var(--navy),#1a1040);
+        padding: 20px 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .sidebar-head::after {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle,rgba(124,58,237,0.25) 0%,transparent 65%);
+        }
+
+    .sidebar-title {
+        font-family: var(--f-display);
+        font-size: 1rem;
+        font-weight: 800;
+        color: #fff;
+        position: relative;
+        z-index: 2;
+    }
+
+    .sidebar-sub {
+        font-size: .78rem;
+        color: rgba(255,255,255,0.4);
+        margin-top: 4px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .sidebar-body {
+        padding: 20px;
+    }
+
+    .tip-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 14px;
+        font-size: .82rem;
+        color: var(--text-2);
+        line-height: 1.5;
+    }
+
+        .tip-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .tip-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: var(--purple-soft);
+        color: var(--purple);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    /* Action buttons */
+    .action-row {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn-submit {
+        flex: 1;
+        padding: 13px 0;
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 11px;
+        font-family: var(--f-body);
+        font-size: .92rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .2s var(--ease);
+        box-shadow: 0 4px 14px var(--purple-glow);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+        .btn-submit:hover {
+            background: var(--purple-2);
+            transform: translateY(-1px);
+        }
+
+    .btn-cancel {
+        padding: 13px 22px;
+        background: transparent;
+        color: var(--muted);
+        border: 1.5px solid var(--border-2);
+        border-radius: 11px;
+        font-family: var(--f-body);
+        font-size: .88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn-cancel:hover {
+            border-color: var(--purple);
+            color: var(--purple);
+        }
+
+    @@media(max-width:900px) {
+        .form-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .sidebar-card {
+            position: static;
+        }
+    }
+
+    @@media(max-width:600px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title">Create Team Room</div>
+    <div class="page-sub">Set up your team profile and start receiving project requests</div>
+</div>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="form-error" style="margin-bottom:16px;padding:12px 16px;background:#FEF2F2;border-radius:10px;border:1px solid rgba(220,38,38,0.2);"></div>
+
+    <div class="form-layout">
+        <div>
+
+            <!-- Team Info -->
+            <div class="section-card">
+                <div class="section-head">
+                    <i class="bi bi-people-fill"></i>
+                    <div class="section-title">Team Information</div>
+                </div>
+                <div class="section-body">
+                    <div class="form-group">
+                        <label class="form-lbl">Team Name <span>*</span></label>
+                        <input asp-for="TeamName" class="form-input" placeholder="e.g. DesignMasters Studio" />
+                        <span asp-validation-for="TeamName" class="form-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-lbl">Description <span>*</span></label>
+                        <textarea asp-for="Description" class="form-textarea" placeholder="What does your team specialize in? What makes you unique?"></textarea>
+                        <span asp-validation-for="Description" class="form-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-lbl">Specialty <span>*</span></label>
+                        <input asp-for="Specialty" class="form-input" placeholder="e.g. Web Development, UI/UX Design, Mobile Apps" />
+                        <span asp-validation-for="Specialty" class="form-error"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="section-card">
+                <div class="section-head">
+                    <i class="bi bi-gear-fill"></i>
+                    <div class="section-title">Skills & Technologies</div>
+                </div>
+                <div class="section-body">
+                    <div class="skills-container" id="skillsContainer">
+                        <div class="skill-input-row">
+                            <input name="Skills[0]" class="form-input" placeholder="e.g. React, Node.js, Figma" />
+                            <button type="button" class="btn-remove-skill" onclick="removeSkill(this)" title="Remove"><i class="bi bi-x"></i></button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add" onclick="addSkill()"><i class="bi bi-plus"></i> Add Skill</button>
+                </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="section-card">
+                <div class="section-head">
+                    <i class="bi bi-currency-dollar"></i>
+                    <div class="section-title">Pricing</div>
+                </div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-lbl">Hourly Rate ($) <span>*</span></label>
+                            <input asp-for="HourlyRate" type="number" class="form-input" placeholder="e.g. 75" min="1" step="5" />
+                            <span asp-validation-for="HourlyRate" class="form-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl">Project Rate ($) <span style="color:var(--muted);font-weight:400">Optional</span></label>
+                            <input asp-for="ProjectRate" type="number" class="form-input" placeholder="e.g. 2000" min="0" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Leader Info -->
+            <div class="section-card">
+                <div class="section-head">
+                    <i class="bi bi-person-badge-fill"></i>
+                    <div class="section-title">Team Leader Info</div>
+                </div>
+                <div class="section-body">
+                    <div class="form-group">
+                        <label class="form-lbl">Bio</label>
+                        <textarea asp-for="TeamLeaderBio" class="form-textarea" placeholder="Brief description of your background and expertise..." style="min-height:80px"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-lbl">Years of Experience <span>*</span></label>
+                            <input asp-for="YearsOfExperience" type="number" class="form-input" placeholder="e.g. 5" min="0" max="50" />
+                            <span asp-validation-for="YearsOfExperience" class="form-error"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Members -->
+            <div class="section-card">
+                <div class="section-head">
+                    <i class="bi bi-person-plus-fill"></i>
+                    <div class="section-title">Team Members</div>
+                </div>
+                <div class="section-body">
+                    <div id="membersContainer"></div>
+                    <button type="button" class="btn-add" onclick="addMember()"><i class="bi bi-plus"></i> Add Team Member</button>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-row">
+                <a asp-action="MyTeams" class="btn-cancel"><i class="bi bi-x-circle"></i> Cancel</a>
+                <button type="submit" class="btn-submit"><i class="bi bi-check-circle-fill"></i> Create Team Room</button>
+            </div>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+            <div class="sidebar-card">
+                <div class="sidebar-head">
+                    <div class="sidebar-title">Tips for Success</div>
+                    <div class="sidebar-sub">Make your team stand out</div>
+                </div>
+                <div class="sidebar-body">
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="bi bi-lightbulb-fill"></i></div>
+                        <div>Write a clear, specific description that highlights your team's unique strengths.</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="bi bi-tags-fill"></i></div>
+                        <div>Add all relevant skills — clients search by technology and expertise.</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="bi bi-currency-dollar"></i></div>
+                        <div>Set competitive rates. Check similar teams in your specialty for reference.</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="bi bi-people-fill"></i></div>
+                        <div>Add all team members with their roles — it builds client confidence.</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="bi bi-patch-check-fill"></i></div>
+                        <div>After creation, your team goes through admin verification before going live.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    var skillIdx = 1;
+    function addSkill() {
+      var c = document.getElementById('skillsContainer');
+      var d = document.createElement('div');
+      d.className = 'skill-input-row';
+      d.innerHTML = '<input name="Skills[' + skillIdx + ']" class="form-input" placeholder="Another skill or technology" />'
+                  + '<button type="button" class="btn-remove-skill" onclick="removeSkill(this)" title="Remove"><i class="bi bi-x"></i></button>';
+      c.appendChild(d);
+      skillIdx++;
+    }
+    function removeSkill(btn) {
+      var rows = document.querySelectorAll('.skill-input-row');
+      if (rows.length > 1) btn.parentElement.remove();
+    }
+
+    var memberIdx = 0;
+    function addMember() {
+      var c = document.getElementById('membersContainer');
+      var d = document.createElement('div');
+      d.className = 'member-block';
+      d.innerHTML = '<div class="member-num">Member #' + (memberIdx + 1) + '</div>'
+        + '<button type="button" class="btn-remove-member" onclick="this.parentElement.remove()" title="Remove"><i class="bi bi-x"></i></button>'
+        + '<div class="form-row">'
+        +   '<div class="form-group"><label class="form-lbl">Full Name</label><input name="TeamMembers[' + memberIdx + '].MemberName" class="form-input" placeholder="e.g. Ahmed Hassan" /></div>'
+        +   '<div class="form-group"><label class="form-lbl">Role</label><input name="TeamMembers[' + memberIdx + '].Role" class="form-input" placeholder="e.g. Frontend Developer" /></div>'
+        + '</div>'
+        + '<div class="form-group"><label class="form-lbl">Profile Image URL <span style="color:var(--muted);font-weight:400">Optional</span></label><input name="TeamMembers[' + memberIdx + '].ProfileImageUrl" class="form-input" placeholder="https://..." /></div>';
+      c.appendChild(d);
+      memberIdx++;
+    }
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

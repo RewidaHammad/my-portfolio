@@ -1,0 +1,1097 @@
+﻿@using Scalaverse.Entities.Models
+@using Scalaverse.Entitys.Models
+@model IEnumerable<ProjectRequest>
+
+@{
+    ViewData["Title"] = "Incoming Requests";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    :root {
+        --ink: #0d1117;
+        --ink-soft: #24292f;
+        --muted: #57606a;
+        --border: rgba(0,0,0,.10);
+        --border-subtle: rgba(0,0,0,.06);
+        --bg: #f6f8fa;
+        --surface: #fff;
+        --accent: #4f46e5;
+        --accent-hover: #4338ca;
+        --accent-light: rgba(79,70,229,.1);
+        --green: #1a7f37;
+        --green-bg: #dafbe1;
+        --red: #cf222e;
+        --red-bg: #ffebe9;
+        --red-hover: #a40e26;
+        --gold: #966c00;
+        --gold-bg: #fff3cd;
+        --purple-grad: linear-gradient(135deg, #4f46e5, #7c3aed);
+        --dark-grad: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        --radius: 12px;
+        --shadow-sm: 0 1px 4px rgba(0,0,0,.06);
+        --shadow-md: 0 8px 32px rgba(79,70,229,.12);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 14px;
+    }
+
+    /* ── WRAP ── */
+    .sv-wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+    }
+
+    /* ── PAGE HEADER ── */
+    .sv-page-header {
+        background: var(--dark-grad);
+        border-radius: 16px;
+        padding: 32px;
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .sv-page-header::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(167,139,250,.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+    .sv-page-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 6px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .sv-page-title .bi {
+            color: #a78bfa;
+        }
+
+    .sv-page-sub {
+        color: rgba(255,255,255,.6);
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .sv-company-tag {
+        background: rgba(250,189,75,.15);
+        color: #fbbf24;
+        border: 1px solid rgba(250,189,75,.3);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-left: 4px;
+    }
+
+    .sv-pending-badge {
+        background: rgba(239,68,68,.15);
+        color: #fca5a5;
+        border: 1px solid rgba(239,68,68,.3);
+        border-radius: 24px;
+        padding: 8px 18px;
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    /* ── REQUEST CARD ── */
+    .sv-req-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 23px;
+        overflow: hidden;
+        transition: box-shadow .2s, transform .2s;
+        box-shadow: var(--shadow-sm);
+    }
+
+        .sv-req-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+    .sv-req-header {
+        padding: 28px 27px 18px;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .sv-req-title {
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0 0 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .sv-new-badge {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: #fff;
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        animation: sv-pulse 1.5s infinite;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    @@keyframes sv-pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: .6;
+        }
+    }
+
+    .sv-client-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sv-client-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--purple-grad);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .sv-client-name {
+        font-size: 15px;
+        font-weight: 650;
+    }
+
+    .sv-client-email {
+        font-size: 12px;
+        color: var(--muted);
+    }
+
+    .sv-req-meta {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .sv-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: var(--muted);
+        background: var(--bg);
+        padding: 4px 10px;
+        border-radius: 20px;
+        border: 1px solid rgba(0,0,0,.06);
+        white-space: nowrap;
+    }
+
+        .sv-meta-item strong {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+    .sv-service-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        background: linear-gradient(135deg, rgba(245,158,11,.15), rgba(245,158,11,.05));
+        color: var(--gold);
+        border: 1px solid rgba(245,158,11,.3);
+        white-space: nowrap;
+    }
+
+    .sv-req-desc {
+        padding: 14px 24px;
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.6;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        gap: 8px;
+    }
+
+        .sv-req-desc .bi {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+    .sv-req-footer {
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        background: rgba(246,248,250,.5);
+    }
+
+    .sv-req-id {
+        font-size: 11px;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    /* ── BUTTONS ── */
+    .sv-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        font-family: inherit;
+        transition: all .15s;
+        text-decoration: none;
+        line-height: 1;
+    }
+
+    .sv-btn-decline {
+        background: #fff;
+        color: var(--red);
+        border: 1.5px solid rgba(207,34,46,.3);
+    }
+
+        .sv-btn-decline:hover {
+            background: var(--red-bg);
+            border-color: var(--red);
+            color: var(--red-hover);
+        }
+
+    .sv-btn-primary {
+        background: var(--purple-grad);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(79,70,229,.3);
+    }
+
+        .sv-btn-primary:hover {
+            background: linear-gradient(135deg, var(--accent-hover), #6d28d9);
+            box-shadow: 0 4px 16px rgba(79,70,229,.4);
+        }
+
+    .sv-btn:disabled {
+        opacity: .55;
+        cursor: not-allowed;
+    }
+
+    /* ── EMPTY STATE ── */
+    .sv-empty {
+        text-align: center;
+        padding: 64px 20px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+    }
+
+    .sv-empty-icon {
+        width: 64px;
+        height: 64px;
+        background: var(--bg);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 28px;
+        color: #c9d1d9;
+    }
+
+    .sv-empty h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .sv-empty p {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    /* ── MODAL ── */
+    .modal-content {
+        border-radius: 16px;
+        border: 1px solid rgba(0,0,0,.1);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        overflow: hidden;
+    }
+
+    .modal-header {
+        background: var(--dark-grad);
+        border-bottom: none;
+        padding: 20px 24px;
+    }
+
+    .modal-title {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .modal-title .bi {
+            color: #a78bfa;
+        }
+
+        .modal-title .sv-modal-project {
+            color: rgba(255,255,255,.6);
+            font-weight: 500;
+        }
+
+    .btn-close {
+        background: rgba(255,255,255,.15) !important;
+        border-radius: 8px;
+        opacity: 1;
+        filter: invert(1);
+    }
+
+        .btn-close:hover {
+            background: rgba(255,255,255,.25) !important;
+        }
+
+    .modal-body {
+        padding: 22px 24px;
+        max-height: 65vh;
+        overflow-y: auto;
+    }
+
+    .modal-footer {
+        border-top: 1px solid var(--border-subtle);
+        padding: 14px 24px;
+        background: rgba(246,248,250,.5);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .sv-form-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .sv-form-control {
+        border: 1.5px solid rgba(0,0,0,.12);
+        border-radius: 8px;
+        padding: 9px 12px;
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+        width: 100%;
+        transition: border-color .15s, box-shadow .15s;
+        background: #fff;
+        color: var(--ink);
+    }
+
+        .sv-form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,70,229,.1);
+        }
+
+    .sv-svc-ref {
+        background: var(--gold-bg);
+        border: 1px solid rgba(245,158,11,.3);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 12px;
+        margin-bottom: 16px;
+        color: var(--gold);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+    }
+
+    .sv-two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .sv-budget-hint {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+    }
+
+    /* ── MILESTONE BUILDER ── */
+    .sv-ms-builder {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .sv-ms-row {
+        background: var(--bg);
+        border: 1px solid rgba(0,0,0,.07);
+        border-radius: 10px;
+        padding: 14px 16px;
+    }
+
+    .sv-ms-row-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .sv-ms-num {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--purple-grad);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .sv-ms-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--ink);
+        margin-left: 8px;
+    }
+
+    .sv-ms-del {
+        background: none;
+        border: none;
+        color: var(--red);
+        cursor: pointer;
+        padding: 4px 6px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        font-family: inherit;
+        font-size: 14px;
+        transition: background .15s;
+    }
+
+        .sv-ms-del:hover {
+            background: var(--red-bg);
+        }
+
+    .sv-ms-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .sv-budget-summary {
+        background: linear-gradient(135deg, rgba(79,70,229,.08), rgba(124,58,237,.05));
+        border: 1px solid rgba(79,70,229,.15);
+        border-radius: 10px;
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 14px;
+    }
+
+    .sv-budget-label {
+        font-size: 15px;
+        color: var(--muted);
+        margin-bottom: 2px;
+    }
+
+    .sv-budget-total {
+        font-size: 25px;
+        font-weight: 850;
+        color: var(--accent);
+    }
+
+    .sv-budget-ok {
+        color: var(--green);
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .sv-budget-bad {
+        color: var(--red);
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    /* ── TOAST ── */
+    .sv-toast {
+        position: fixed;
+        bottom: 27px;
+        right: 27px;
+        padding: 16px 25px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        z-index: 9999;
+        max-width: 320px;
+        box-shadow: 0 6px 30px rgba(0,0,0,.2);
+        transition: opacity .3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* ── RESPONSIVE ── */
+    @@media (max-width: 600px) {
+        .sv-two-col,
+        .sv-ms-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sv-req-header {
+            padding: 20px;
+        }
+
+        .sv-req-footer {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .sv-page-header {
+            padding: 20px;
+        }
+
+        .sv-page-title {
+            font-size: 18px;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .sv-wrap {
+            padding: 19px 15px 50px;
+        }
+    }
+</style>
+
+<div class="sv-wrap">
+
+    @Html.AntiForgeryToken()
+
+    <!-- PAGE HEADER -->
+    <div class="sv-page-header">
+        <div>
+            <h1 class="sv-page-title">
+                <i class="bi bi-inbox-fill"></i>
+                Incoming Requests
+                @if (ViewBag.CompanyName != null)
+                {
+                    <span class="sv-company-tag">
+                        <i class="bi bi-building"></i> @ViewBag.CompanyName
+                    </span>
+                }
+            </h1>
+            <p class="sv-page-sub">Review client requests and send professional proposals</p>
+        </div>
+        @if (Model.Any())
+        {
+            <span class="sv-pending-badge">
+                <i class="bi bi-bell-fill"></i> @Model.Count() pending
+            </span>
+        }
+    </div>
+
+    <!-- EMPTY STATE -->
+    @if (!Model.Any())
+    {
+        <div class="sv-empty">
+            <div class="sv-empty-icon">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <h3>No incoming requests</h3>
+            <p>When clients send requests to your company, they'll appear here</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var req in Model)
+        {
+            var initial = req.Client?.User?.FullName?.Substring(0, 1).ToUpper() ?? "C";
+            var isNew = (DateTime.UtcNow - req.CreatedAt).TotalHours < 24;
+
+            <div class="sv-req-card">
+                <div class="sv-req-header">
+
+                    <!-- TITLE + NEW BADGE -->
+                    <h3 class="sv-req-title">
+                        @req.ProjectName
+                        @if (isNew)
+                        {
+                            <span class="sv-new-badge">
+                                <i class="bi bi-lightning-fill"></i> NEW
+                            </span>
+                        }
+                    </h3>
+
+                    <!-- CLIENT ROW -->
+                    <div class="sv-client-row">
+                        <div class="sv-client-avatar">@initial</div>
+                        <div>
+                            <div class="sv-client-name">@req.Client?.User?.FullName</div>
+                            <div class="sv-client-email">@req.Client?.User?.Email</div>
+                        </div>
+                    </div>
+
+                    <!-- META CHIPS -->
+                    <div class="sv-req-meta">
+                        <span class="sv-meta-item">
+                            <i class="bi bi-calendar3"></i>
+                            <strong>@req.CreatedAt.ToString("MMM dd, yyyy — HH:mm")</strong>
+                        </span>
+
+                        @if (req.ClientBudget.HasValue)
+                        {
+                            <span class="sv-meta-item">
+                                <i class="bi bi-currency-dollar"></i>
+                                Budget: <strong>$@req.ClientBudget.Value.ToString("N0")</strong>
+                            </span>
+                        }
+
+                        @if (!string.IsNullOrEmpty(req.Category))
+                        {
+                            <span class="sv-meta-item">
+                                <i class="bi bi-tag"></i>
+                                <strong>@req.Category</strong>
+                            </span>
+                        }
+
+                        @if (req.SelectedService != null)
+                        {
+                            <span class="sv-service-tag">
+                                <i class="bi bi-star-fill"></i>
+                                @req.SelectedService.ServiceName — @req.SelectedServiceTier
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <!-- DESCRIPTION -->
+                @if (!string.IsNullOrWhiteSpace(req.Description))
+                {
+                    <div class="sv-req-desc">
+                        <i class="bi bi-chat-quote"></i>
+                        <span>@req.Description</span>
+                    </div>
+                }
+
+                <!-- FOOTER -->
+                <div class="sv-req-footer">
+                    <span class="sv-req-id">Request #@req.RequestId</span>
+                    <div style="display:flex;gap:8px">
+                        <button class="sv-btn sv-btn-decline"
+                                onclick="svDeclineRequest(@req.RequestId)">
+                            <i class="bi bi-x-lg"></i> Decline
+                        </button>
+                        <button class="sv-btn sv-btn-primary"
+                                onclick="svOpenProposalModal(
+                                                    @req.RequestId,
+                                                    '@Html.Raw(req.ProjectName.Replace("'", "\\'"))',
+                                                    @(req.ClientBudget ?? 0),
+                                                    '@Html.Raw((req.SelectedService?.ServiceName ?? "").Replace("'", "\\'"))')">
+                            <i class="bi bi-file-earmark-text"></i> Send Proposal
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PROPOSAL MODAL
+═══════════════════════════════════════════ -->
+<div class="modal fade" id="svProposalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-file-earmark-text"></i>
+                    Send Proposal —
+                    <span class="sv-modal-project" id="svModalProjectName"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body">
+                <input type="hidden" id="svProposalRequestId">
+
+                <!-- Service reference box -->
+                <div id="svServiceRefBox" class="sv-svc-ref" style="display:none">
+                    <i class="bi bi-star-fill"></i>
+                    Based on service: <strong id="svServiceRefName"></strong>
+                </div>
+
+                <!-- Budget + Date row -->
+                <div class="sv-two-col">
+                    <div>
+                        <label class="sv-form-label">Proposed Budget ($) <span style="color:var(--red)">*</span></label>
+                        <input type="number" class="sv-form-control" id="svProposedBudget"
+                               placeholder="e.g. 15000" min="1" oninput="svUpdateBudgetCheck()">
+                        <div class="sv-budget-hint">
+                            Client budget: $<span id="svClientBudgetHint">—</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="sv-form-label">Estimated End Date <span style="color:var(--red)">*</span></label>
+                        <input type="date" class="sv-form-control" id="svEstimatedEndDate"
+                               min="@DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd")">
+                    </div>
+                </div>
+
+                <!-- Note -->
+                <div style="margin-bottom:20px">
+                    <label class="sv-form-label">Proposal Note</label>
+                    <textarea class="sv-form-control" id="svProposalNote" rows="3"
+                              placeholder="Describe your approach, methodology, and why your company is the best fit…"
+                              style="resize:vertical"></textarea>
+                </div>
+
+                <!-- Milestones header -->
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <label class="sv-form-label" style="margin:0">
+                        Project Milestones <span style="color:var(--red)">*</span>
+                    </label>
+                    <button type="button" class="sv-btn sv-btn-decline"
+                            style="padding:5px 12px;font-size:12px"
+                            onclick="svAddMilestone()">
+                        <i class="bi bi-plus"></i> Add Milestone
+                    </button>
+                </div>
+
+                <!-- Milestone rows injected here -->
+                <div class="sv-ms-builder" id="svMsBuilder"></div>
+
+                <!-- Budget summary -->
+                <div class="sv-budget-summary">
+                    <div>
+                        <div class="sv-budget-label">Milestones Total</div>
+                        <div class="sv-budget-total">$<span id="svMsTotal">0</span></div>
+                    </div>
+                    <div id="svBudgetMatch"></div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer">
+                <button type="button" class="sv-btn sv-btn-decline" data-bs-dismiss="modal">
+                    <i class="bi bi-x"></i> Cancel
+                </button>
+                <button type="button" class="sv-btn sv-btn-primary" id="svSendProposalBtn">
+                    <i class="bi bi-send"></i> Send Proposal
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        (function () {
+            'use strict';
+
+            /* ─── helpers ─── */
+            var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            var msCount = 0;
+
+            function showToast(msg, type) {
+                var colors = {
+                    success: 'linear-gradient(135deg,#1a7f37,#166b2d)',
+                    error:   'linear-gradient(135deg,#cf222e,#a40e26)',
+                    info:    'linear-gradient(135deg,#4f46e5,#7c3aed)'
+                };
+                var icons = {
+                    success: 'bi-check-circle-fill',
+                    error:   'bi-exclamation-circle-fill',
+                    info:    'bi-info-circle-fill'
+                };
+                var t = document.createElement('div');
+                t.className = 'sv-toast';
+                t.style.background = colors[type] || colors.info;
+                t.innerHTML = '<i class="bi ' + (icons[type] || icons.info) + '"></i>' + msg;
+                document.body.appendChild(t);
+                setTimeout(function () {
+                    t.style.opacity = '0';
+                    setTimeout(function () { t.remove(); }, 300);
+                }, 3500);
+            }
+
+            function post(url, data, cb) {
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': token
+                    },
+                    body: new URLSearchParams(data)
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (r) {
+                    showToast(r.message || 'Done', r.success ? 'success' : 'error');
+                    if (r.success && cb) cb(r);
+                })
+                .catch(function () { showToast('Server error — please try again', 'error'); });
+            }
+
+            /* ─── open proposal modal ─── */
+            window.svOpenProposalModal = function (requestId, projectName, clientBudget, serviceName) {
+                document.getElementById('svProposalRequestId').value = requestId;
+                document.getElementById('svModalProjectName').textContent = projectName;
+                document.getElementById('svClientBudgetHint').textContent =
+                    clientBudget > 0 ? Number(clientBudget).toLocaleString() : '—';
+                document.getElementById('svProposedBudget').value = clientBudget > 0 ? clientBudget : '';
+                document.getElementById('svProposalNote').value   = '';
+                document.getElementById('svEstimatedEndDate').value = '';
+                document.getElementById('svMsBuilder').innerHTML  = '';
+                msCount = 0;
+
+                var svcBox = document.getElementById('svServiceRefBox');
+                if (serviceName) {
+                    document.getElementById('svServiceRefName').textContent = serviceName;
+                    svcBox.style.display = 'flex';
+                } else {
+                    svcBox.style.display = 'none';
+                }
+
+                svAddMilestone();
+                svAddMilestone();
+                svAddMilestone();
+                svUpdateBudgetCheck();
+
+                new bootstrap.Modal(document.getElementById('svProposalModal')).show();
+            };
+
+            /* ─── add milestone row ─── */
+            window.svAddMilestone = function () {
+                msCount++;
+                var idx = msCount;
+                var div = document.createElement('div');
+                div.className = 'sv-ms-row';
+                div.id = 'svMs-' + idx;
+                div.innerHTML =
+                    '<div class="sv-ms-row-header">' +
+                        '<div style="display:flex;align-items:center">' +
+                            '<div class="sv-ms-num">' + idx + '</div>' +
+                            '<span class="sv-ms-label">Milestone ' + idx + '</span>' +
+                        '</div>' +
+                        (idx > 1
+                            ? '<button type="button" class="sv-ms-del" onclick="svRemoveMilestone(' + idx + ')">' +
+                                  '<i class="bi bi-trash3"></i>' +
+                              '</button>'
+                            : '') +
+                    '</div>' +
+                    '<div style="margin-bottom:10px">' +
+                        '<label class="sv-form-label">Title *</label>' +
+                        '<input type="text" class="sv-form-control sv-ms-title" placeholder="e.g. Requirements & Architecture" oninput="svUpdateBudgetCheck()">' +
+                    '</div>' +
+                    '<div style="margin-bottom:10px">' +
+                        '<label class="sv-form-label">Description</label>' +
+                        '<input type="text" class="sv-form-control sv-ms-desc" placeholder="Deliverables for this milestone">' +
+                    '</div>' +
+                    '<div class="sv-ms-grid">' +
+                        '<div>' +
+                            '<label class="sv-form-label">Amount ($) *</label>' +
+                            '<input type="number" class="sv-form-control sv-ms-amount" min="1" placeholder="0" oninput="svUpdateBudgetCheck()">' +
+                        '</div>' +
+                        '<div>' +
+                            '<label class="sv-form-label">Days from Start *</label>' +
+                            '<input type="number" class="sv-form-control sv-ms-days" min="1" placeholder="e.g. 30">' +
+                        '</div>' +
+                    '</div>';
+                document.getElementById('svMsBuilder').appendChild(div);
+            };
+
+            /* ─── remove milestone row ─── */
+            window.svRemoveMilestone = function (idx) {
+                var el = document.getElementById('svMs-' + idx);
+                if (el) { el.remove(); svUpdateBudgetCheck(); }
+            };
+
+            /* ─── budget check ─── */
+            window.svUpdateBudgetCheck = function () {
+                var total = 0;
+                document.querySelectorAll('.sv-ms-amount').forEach(function (a) {
+                    total += parseFloat(a.value) || 0;
+                });
+                document.getElementById('svMsTotal').textContent = total.toLocaleString();
+
+                var budget   = parseFloat(document.getElementById('svProposedBudget').value) || 0;
+                var matchEl  = document.getElementById('svBudgetMatch');
+
+                if (budget > 0) {
+                    if (Math.abs(total - budget) < 0.01) {
+                        matchEl.className = 'sv-budget-ok';
+                        matchEl.innerHTML = '<i class="bi bi-check-circle-fill"></i> Matches budget ✓';
+                    } else {
+                        var diff = total - budget;
+                        matchEl.className = 'sv-budget-bad';
+                        matchEl.innerHTML =
+                            '<i class="bi bi-exclamation-circle-fill"></i> ' +
+                            (diff > 0 ? '+' : '') +
+                            ' $' + Math.abs(diff).toLocaleString() + ' vs budget';
+                    }
+                } else {
+                    matchEl.textContent = '';
+                }
+            };
+
+            /* ─── send proposal ─── */
+            document.getElementById('svSendProposalBtn').addEventListener('click', function () {
+                var requestId = document.getElementById('svProposalRequestId').value;
+                var budget    = document.getElementById('svProposedBudget').value;
+                var endDate   = document.getElementById('svEstimatedEndDate').value;
+                var note      = document.getElementById('svProposalNote').value;
+
+                if (!budget || !endDate) {
+                    showToast('Please fill in the budget and end date', 'error');
+                    return;
+                }
+
+                var rows       = document.querySelectorAll('.sv-ms-row');
+                var milestones = [];
+                var valid      = true;
+                var order      = 0;
+
+                rows.forEach(function (row) {
+                    order++;
+                    var title  = row.querySelector('.sv-ms-title').value.trim();
+                    var desc   = row.querySelector('.sv-ms-desc').value.trim();
+                    var amount = row.querySelector('.sv-ms-amount').value;
+                    var days   = row.querySelector('.sv-ms-days').value;
+                    if (!title || !amount || !days) { valid = false; return; }
+                    milestones.push({ title: title, desc: desc, amount: amount, days: days, order: order });
+                });
+
+                if (!valid || milestones.length === 0) {
+                    showToast('Please complete all milestone fields', 'error');
+                    return;
+                }
+
+                var total = milestones.reduce(function (s, m) { return s + parseFloat(m.amount); }, 0);
+                if (Math.abs(total - parseFloat(budget)) > 0.01) {
+                    showToast('Milestones total must equal the proposed budget', 'error');
+                    return;
+                }
+
+                var btn = document.getElementById('svSendProposalBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending…';
+
+                var params = new URLSearchParams();
+                params.append('requestId', requestId);
+                params.append('proposedBudget', budget);
+                params.append('estimatedEndDate', endDate);
+                params.append('proposalNote', note);
+                milestones.forEach(function (ms, i) {
+                    params.append('milestones[' + i + '].Title',        ms.title);
+                    params.append('milestones[' + i + '].Description',  ms.desc);
+                    params.append('milestones[' + i + '].Amount',       ms.amount);
+                    params.append('milestones[' + i + '].DaysFromStart', ms.days);
+                });
+
+                fetch('@Url.Action("CompanySendProposal", "Projects", new { area = "TeamRooms" })', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': token
+                    },
+                    body: params.toString()
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (r) {
+                    showToast(r.message, r.success ? 'success' : 'error');
+                    if (r.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('svProposalModal')).hide();
+                        setTimeout(function () { location.reload(); }, 1000);
+                    } else {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="bi bi-send"></i> Send Proposal';
+                    }
+                })
+                .catch(function () {
+                    showToast('Server error — please try again', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-send"></i> Send Proposal';
+                });
+            });
+
+            /* ─── decline request ─── */
+            window.svDeclineRequest = function (requestId) {
+                if (!confirm('Are you sure you want to decline this request?')) return;
+                post(
+                    '@Url.Action("DeclineCompanyRequest", "Projects", new { area = "TeamRooms" })',
+                    { requestId: requestId },
+                    function () { setTimeout(function () { location.reload(); }, 800); }
+                );
+            };
+
+        })();
+    </script>
+}

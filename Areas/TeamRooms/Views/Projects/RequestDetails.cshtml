@@ -1,0 +1,792 @@
+﻿@using Scalaverse.Entities.Models
+@using Scalaverse.Entitys.Models
+@model ProjectRequest
+
+@{
+    ViewData["Title"] = Model.ProjectName + " — Request";
+    var isClient = ViewBag.IsClient == true;
+    var isTeamLeader = ViewBag.IsTeamLeader == true;
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --ink: #0d1117;
+        --ink-soft: #24292f;
+        --muted: #57606a;
+        --border: #d0d7de;
+        --border-subtle: #eaeef2;
+        --bg: #f6f8fa;
+        --surface: #ffffff;
+        --accent: #1a6bff;
+        --accent-light: #dbeafe;
+        --green: #1a7f37;
+        --green-bg: #dafbe1;
+        --red: #cf222e;
+        --red-bg: #ffebe9;
+        --orange: #bf8700;
+        --orange-bg: #fff8c5;
+        --purple: #6e40c9;
+        --purple-bg: #ede8ff;
+        --radius: 10px;
+        --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
+    }
+
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Sora', sans-serif;
+    }
+
+    .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+    }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+        .breadcrumb a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+            .breadcrumb a:hover {
+                text-decoration: underline;
+            }
+
+        .breadcrumb .sep {
+            color: var(--border);
+        }
+
+    /* ── Status Banner ── */
+    .status-banner {
+        border-radius: var(--radius);
+        padding: 16px 22px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+    }
+
+        .status-banner i {
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .status-banner h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin: 0 0 2px;
+        }
+
+        .status-banner p {
+            margin: 0;
+            opacity: .85;
+        }
+
+    .banner-pending {
+        background: var(--orange-bg);
+        color: var(--orange);
+        border: 1px solid #f0c060;
+    }
+
+    .banner-proposal {
+        background: var(--purple-bg);
+        color: var(--purple);
+        border: 1px solid #c8b8f5;
+    }
+
+    .banner-accepted {
+        background: var(--green-bg);
+        color: var(--green);
+        border: 1px solid #a3e8b0;
+    }
+
+    .banner-rejected {
+        background: var(--red-bg);
+        color: var(--red);
+        border: 1px solid #ffc1c0;
+    }
+
+    /* ── Cards ── */
+    .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .card-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+    }
+
+        .card-title i {
+            color: var(--accent);
+        }
+
+    .card-body {
+        padding: 20px 22px;
+    }
+
+    /* ── Info Grid ── */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    @@media(max - width: 560px)
+
+    {
+        .info-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    }
+
+    .info-item {
+    }
+
+    .info-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        color: var(--muted);
+        margin-bottom: 4px;
+    }
+
+    .info-val {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--ink);
+    }
+
+    /* ── Milestone List ── */
+    .ms-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+        .ms-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .ms-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .ms-num {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--accent-light);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .ms-title-text {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink);
+        margin: 0 0 2px;
+    }
+
+    .ms-meta {
+        font-size: 12px;
+        color: var(--muted);
+    }
+
+    .ms-amount {
+        font-family: 'Sora', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .tl-item {
+        display: flex;
+        gap: 14px;
+        padding-bottom: 20px;
+        position: relative;
+    }
+
+        .tl-item:last-child {
+            padding-bottom: 0;
+        }
+
+    .tl-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        z-index: 1;
+    }
+
+    .tl-dot-done {
+        background: var(--green-bg);
+        color: var(--green);
+    }
+
+    .tl-dot-active {
+        background: var(--accent-light);
+        color: var(--accent);
+    }
+
+    .tl-dot-pending {
+        background: var(--bg);
+        color: var(--muted);
+        border: 2px solid var(--border);
+    }
+
+    .tl-item:not(:last-child) .tl-dot::after {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 32px;
+        width: 2px;
+        height: calc(100% - 12px);
+        background: var(--border-subtle);
+    }
+
+    .tl-content {
+        flex: 1;
+        padding-top: 4px;
+    }
+
+    .tl-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0 0 2px;
+    }
+
+    .tl-date {
+        font-size: 12px;
+        color: var(--muted);
+    }
+
+    /* ── Buttons ── */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1px solid transparent;
+        font-family: inherit;
+        transition: all .15s;
+        text-decoration: none;
+    }
+
+    .btn-success {
+        background: var(--green);
+        color: #fff;
+        border-color: var(--green);
+    }
+
+        .btn-success:hover {
+            background: #116329;
+        }
+
+    .btn-danger {
+        background: var(--red);
+        color: #fff;
+        border-color: var(--red);
+    }
+
+        .btn-danger:hover {
+            background: #a40e26;
+        }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--ink-soft);
+        border-color: var(--border);
+    }
+
+        .btn-outline:hover {
+            background: var(--bg);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+    .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+    }
+
+        .btn-primary:hover {
+            background: #1458d6;
+        }
+
+    /* ── Modal ── */
+    .modal-content {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid var(--border-subtle);
+        padding: 18px 24px;
+    }
+
+    .modal-title {
+        font-family: 'Sora', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .modal-body {
+        padding: 20px 24px;
+    }
+
+    .modal-footer {
+        border-top: 1px solid var(--border-subtle);
+        padding: 14px 24px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink-soft);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .form-control {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 9px 12px;
+        font-size: 14px;
+        font-family: inherit;
+        outline: none;
+        width: 100%;
+        transition: border-color .15s;
+    }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(26,107,255,.1);
+        }
+</style>
+
+<div class="wrap">
+
+    @Html.AntiForgeryToken()
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+        <a href="/"><i class="bi bi-house-fill"></i> Home</a>
+        <span class="sep">›</span>
+        @if (isClient)
+        {
+            <a href="@Url.Action("MyRequests", "Projects", new { area = "TeamRooms" })">My Requests</a>
+        }
+        else
+        {
+            <a href="@Url.Action("IncomingRequests", "Projects", new { area = "TeamRooms" })">Incoming Requests</a>
+        }
+        <span class="sep">›</span>
+        <span>@Model.ProjectName</span>
+    </nav>
+
+    <!-- Status Banner -->
+    @{
+        var (bannerClass, bannerIcon, bannerTitle, bannerMsg) = Model.Status switch
+        {
+            "Pending" => ("banner-pending", "bi-clock-fill",
+            "Waiting for Proposal",
+            isClient ? "The team is reviewing your request and will send a proposal soon."
+            : "Review this request and send your proposal."),
+            "ProposalSent" => ("banner-proposal", "bi-file-earmark-check-fill",
+            "Proposal Sent",
+            isClient ? "Review the proposal below and accept or reject it."
+            : "Your proposal has been sent. Waiting for client response."),
+            "Accepted" => ("banner-accepted", "bi-check-circle-fill",
+            "Project Started! 🚀",
+            "The proposal was accepted and the project is now active."),
+            "Rejected" => ("banner-rejected", "bi-x-circle-fill",
+            "Proposal Rejected",
+            !string.IsNullOrEmpty(Model.RejectionReason)
+            ? "Reason: " + Model.RejectionReason
+            : "The proposal was not accepted."),
+            _ => ("banner-pending", "bi-dash-circle", Model.Status, "")
+        };
+    }
+    <div class="status-banner @bannerClass">
+        <i class="bi @bannerIcon"></i>
+        <div>
+            <h4>@bannerTitle</h4>
+            <p>@bannerMsg</p>
+        </div>
+        @if (Model.Status == "Accepted" && Model.ProjectId.HasValue)
+        {
+            <a href="@Url.Action("Details", "Projects", new { area = "TeamRooms", id = Model.ProjectId })"
+               class="btn btn-success" style="margin-left:auto;white-space:nowrap">
+                <i class="bi bi-eye"></i> View Project
+            </a>
+        }
+    </div>
+
+    <!-- Project Info -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title"><i class="bi bi-folder-fill"></i> Project Details</h5>
+            <span style="font-size:12px;color:var(--muted)">Request #@Model.RequestId</span>
+        </div>
+        <div class="card-body">
+            <h3 style="font-size:20px;font-weight:700;margin:0 0 8px">@Model.ProjectName</h3>
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p style="font-size:14px;color:var(--muted);line-height:1.6;margin:0 0 20px">
+                    @Model.Description
+                </p>
+            }
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Client</div>
+                    <div class="info-val">@Model.Client?.User?.FullName</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Team</div>
+                    <div class="info-val">@Model.TeamRoom?.TeamName</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Category</div>
+                    <div class="info-val">@(Model.Category ?? "—")</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Client Budget</div>
+                    <div class="info-val">
+                        @(Model.ClientBudget.HasValue ? "$" + Model.ClientBudget.Value.ToString("N0") : "Not specified")
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Requested On</div>
+                    <div class="info-val">@Model.CreatedAt.ToString("MMM dd, yyyy")</div>
+                </div>
+                @if (Model.RespondedAt.HasValue)
+                {
+                    <div class="info-item">
+                        <div class="info-label">Proposal Sent</div>
+                        <div class="info-val">@Model.RespondedAt.Value.ToString("MMM dd, yyyy")</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Proposal Details (if sent) -->
+    @if ((Model.Status == "ProposalSent" || Model.Status == "Accepted" || Model.Status == "Rejected")
+        && Model.ProposedBudget.HasValue)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-file-earmark-text-fill"></i> Proposal
+                </h5>
+                @if (Model.Status == "Accepted")
+                {
+                    <span style="background:var(--green-bg);color:var(--green);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600">
+                        <i class="bi bi-check-circle-fill"></i> Accepted
+                    </span>
+                }
+            </div>
+            <div class="card-body">
+                <div class="info-grid" style="margin-bottom:20px">
+                    <div class="info-item">
+                        <div class="info-label">Proposed Budget</div>
+                        <div class="info-val" style="color:var(--green);font-size:22px">
+                            $@Model.ProposedBudget.Value.ToString("N0")
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Estimated End Date</div>
+                        <div class="info-val">
+                            @(Model.EstimatedEndDate?.ToString("MMM dd, yyyy") ?? "—")
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.ProposalNote))
+                {
+                    <div style="background:var(--bg);border-radius:8px;padding:14px 18px;font-size:14px;color:var(--ink-soft);line-height:1.6;margin-bottom:20px;border:1px solid var(--border-subtle)">
+                        <i class="bi bi-chat-quote" style="color:var(--muted);margin-right:6px"></i>
+                        @Model.ProposalNote
+                    </div>
+                }
+
+                <!-- Milestones -->
+                @if (Model.ProposedMilestones != null && Model.ProposedMilestones.Any())
+                {
+                    <div style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">
+                        Milestones (@Model.ProposedMilestones.Count)
+                    </div>
+                    @foreach (var ms in Model.ProposedMilestones.OrderBy(m => m.DisplayOrder))
+                    {
+                        <div class="ms-item">
+                            <div class="ms-left">
+                                <div class="ms-num">@ms.DisplayOrder</div>
+                                <div>
+                                    <div class="ms-title-text">@ms.Title</div>
+                                    <div class="ms-meta">
+                                        @ms.DaysFromStart days from start
+                                        @if (!string.IsNullOrWhiteSpace(ms.Description))
+                                        {
+                                            <span>· @ms.Description</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="ms-amount">$@ms.Amount.ToString("N0")</span>
+                        </div>
+                    }
+
+                    <div style="display:flex;justify-content:flex-end;padding-top:12px;border-top:1px solid var(--border-subtle);margin-top:4px">
+                        <span style="font-size:13px;color:var(--muted);margin-right:10px;line-height:2">Total:</span>
+                        <span style="font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:var(--green)">
+                            $@Model.ProposedMilestones.Sum(m => m.Amount).ToString("N0")
+                        </span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Timeline -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title"><i class="bi bi-list-check"></i> Request Timeline</h5>
+        </div>
+        <div class="card-body">
+            <div class="timeline">
+                <div class="tl-item">
+                    <div class="tl-dot tl-dot-done"><i class="bi bi-check-lg"></i></div>
+                    <div class="tl-content">
+                        <div class="tl-title">Request Sent</div>
+                        <div class="tl-date">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</div>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    @if (Model.RespondedAt.HasValue)
+                    {
+                        <div class="tl-dot tl-dot-done"><i class="bi bi-check-lg"></i></div>
+                    }
+                    else
+                    {
+                        <div class="tl-dot tl-dot-active"><i class="bi bi-hourglass-split"></i></div>
+                    }
+                    <div class="tl-content">
+                        <div class="tl-title">Proposal Sent</div>
+                        <div class="tl-date">
+                            @(Model.RespondedAt.HasValue
+                                                        ? Model.RespondedAt.Value.ToString("MMM dd, yyyy HH:mm")
+                                                        : "Waiting…")
+                        </div>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    @if (Model.AcceptedAt.HasValue)
+                    {
+                        <div class="tl-dot tl-dot-done"><i class="bi bi-check-lg"></i></div>
+                    }
+                    else if (Model.Status == "Rejected")
+                    {
+                        <div class="tl-dot" style="background:var(--red-bg);color:var(--red)">
+                            <i class="bi bi-x-lg"></i>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="tl-dot tl-dot-pending"><i class="bi bi-circle"></i></div>
+                    }
+                    <div class="tl-content">
+                        <div class="tl-title">
+                            @(Model.Status == "Rejected" ? "Proposal Rejected" : "Proposal Accepted")
+                        </div>
+                        <div class="tl-date">
+                            @(Model.AcceptedAt.HasValue
+                                                        ? Model.AcceptedAt.Value.ToString("MMM dd, yyyy HH:mm")
+                                                        : Model.Status == "Rejected" ? "Rejected" : "Pending")
+                        </div>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot @(Model.Status == "Accepted" ? "tl-dot-done" : "tl-dot-pending")">
+                        <i class="bi @(Model.Status == "Accepted" ? "bi-rocket-takeoff-fill" : "bi-circle")"></i>
+                    </div>
+                    <div class="tl-content">
+                        <div class="tl-title">Project Started</div>
+                        <div class="tl-date">
+                            @(Model.Status == "Accepted" && Model.AcceptedAt.HasValue
+                                                        ? Model.AcceptedAt.Value.ToString("MMM dd, yyyy HH:mm")
+                                                        : "Not yet")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Actions -->
+    @if (isClient && Model.Status == "ProposalSent")
+    {
+        <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap">
+            <button class="btn btn-danger" onclick="showRejectModal()">
+                <i class="bi bi-x-lg"></i> Reject Proposal
+            </button>
+            <button class="btn btn-success" onclick="acceptProposal()">
+                <i class="bi bi-check-lg"></i> Accept Proposal & Start Project
+            </button>
+        </div>
+    }
+
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-x-circle text-danger me-2"></i>Reject Proposal
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Reason (Optional)</label>
+                <textarea class="form-control" id="rejectReason" rows="3"
+                          placeholder="Tell the team why you're rejecting their proposal…"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmRejectBtn">
+                    <i class="bi bi-x-circle"></i> Reject
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function() {
+            var token     = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            var requestId = @Model.RequestId;
+
+            function showToast(msg, type) {
+                var colors = { success:'#1a7f37', error:'#cf222e', info:'#1a6bff' };
+                var t = document.createElement('div');
+                t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:'+(colors[type]||colors.info)+';color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;max-width:320px;transition:opacity .3s';
+                t.textContent = msg;
+                document.body.appendChild(t);
+                setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){ t.remove(); },300); }, 3500);
+            }
+
+            function post(url, data, cb) {
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': token },
+                    body: new URLSearchParams(data)
+                })
+                .then(r => r.json())
+                .then(r => {
+                    showToast(r.message || 'Done', r.success ? 'success' : 'error');
+                    if (r.success && cb) cb(r);
+                })
+                .catch(() => showToast('Server error', 'error'));
+            }
+
+            window.acceptProposal = function() {
+                if (!confirm('Accept this proposal?\nThis will create the project and start work immediately.')) return;
+                post('@Url.Action("AcceptProposal", "Projects", new { area = "TeamRooms" })',
+                    { requestId },
+                    function(r) {
+                        if (r.projectId) {
+                            setTimeout(function() {
+                                window.location.href = '@Url.Action("Details", "Projects", new { area = "TeamRooms" })/' + r.projectId;
+                            }, 1000);
+                        } else {
+                            setTimeout(function() { location.reload(); }, 1000);
+                        }
+                    }
+                );
+            };
+
+            window.showRejectModal = function() {
+                document.getElementById('rejectReason').value = '';
+                new bootstrap.Modal(document.getElementById('rejectModal')).show();
+            };
+
+            document.getElementById('confirmRejectBtn').addEventListener('click', function() {
+                var reason = document.getElementById('rejectReason').value;
+                post('@Url.Action("RejectProposal", "Projects", new { area = "TeamRooms" })',
+                    { requestId, reason },
+                    function() {
+                        bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
+                        setTimeout(function() { location.reload(); }, 800);
+                    }
+                );
+            });
+        })();
+    </script>
+}

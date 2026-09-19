@@ -1,0 +1,374 @@
+﻿
+
+
+@using ScalaVerse.ViewModel
+@model TeamRoomDetailsViewModel
+
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = Model.TeamRoom.TeamName;
+    var skills = System.Text.Json.JsonSerializer.Deserialize<List<string>>(Model.TeamRoom.Skills);
+}
+
+<style>
+  :root {
+    --navy:#0A0E1A;--purple:#7C3AED;--purple-2:#6D28D9;--purple-3:#8B5CF6;--purple-4:#A78BFA;
+    --purple-soft:rgba(124,58,237,0.08);--purple-glow:rgba(124,58,237,0.2);
+    --white:#FFFFFF;--off:#F8F9FC;--border:rgba(0,0,0,0.07);--border-2:rgba(0,0,0,0.1);
+    --text:#0D1117;--text-2:#374151;--muted:#6B7280;
+    --green:#059669;--green-bg:#ECFDF5;--amber:#D97706;--amber-bg:#FFFBEB;
+    --red:#DC2626;--red-bg:#FEF2F2;--blue:#2563EB;
+    --f-display:'Plus Jakarta Sans',sans-serif;--f-body:'Inter',sans-serif;
+    --ease:cubic-bezier(0.16,1,0.3,1);--radius:16px;
+    --shadow:0 4px 16px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.04);
+    --shadow-lg:0 20px 60px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--f-body);background:var(--off);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+  .breadcrumb-wrap{display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--muted);margin-bottom:24px;}
+  .breadcrumb-wrap a{color:var(--muted);text-decoration:none;transition:color .15s;}
+  .breadcrumb-wrap a:hover{color:var(--purple);}
+  .breadcrumb-wrap i{font-size:10px;}
+  .breadcrumb-wrap span{color:var(--text-2);font-weight:600;}
+
+  .details-layout{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;}
+
+  /* Cards */
+  .dcard{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;}
+  .dcard:last-child{margin-bottom:0;}
+  .dcard-head{display:flex;align-items:center;gap:8px;padding:16px 20px;border-bottom:1px solid var(--border);font-family:var(--f-display);font-size:0.92rem;font-weight:700;color:var(--text);}
+  .dcard-head i{color:var(--purple);font-size:15px;}
+  .dcard-body{padding:20px;}
+
+  /* Hero */
+  .hero-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;}
+  .hero-banner{background:linear-gradient(135deg,var(--navy) 0%,#1a1040 60%,#0f1a35 100%);padding:28px 28px 24px;position:relative;overflow:hidden;}
+  .hero-banner::before{content:'';position:absolute;top:-60px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,0.2) 0%,transparent 65%);}
+  .hero-banner::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse 80% 80% at 50% 0%,black 30%,transparent 80%);pointer-events:none;}
+  .badge-row{display:flex;gap:8px;margin-bottom:14px;position:relative;z-index:2;}
+  .hbadge{display:inline-flex;align-items:center;gap:5px;font-size:0.68rem;font-weight:700;padding:4px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.05em;}
+  .hb-specialty{background:rgba(124,58,237,0.25);color:var(--purple-4);border:1px solid rgba(124,58,237,0.3);}
+  .hb-verified{background:rgba(5,150,105,0.2);color:#34D399;border:1px solid rgba(5,150,105,0.25);}
+  .hero-name{font-family:var(--f-display);font-size:1.9rem;font-weight:800;letter-spacing:-.03em;color:#fff;margin-bottom:6px;position:relative;z-index:2;}
+  .hero-desc{font-size:0.88rem;color:rgba(255,255,255,0.45);position:relative;z-index:2;line-height:1.7;}
+
+  /* Leader */
+  .hero-leader{display:flex;align-items:center;gap:12px;padding:16px 28px;border-bottom:1px solid var(--border);}
+  .leader-av{width:44px;height:44px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,var(--purple),var(--purple-3));display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:1rem;font-weight:800;color:#fff;}
+  .leader-name{font-family:var(--f-display);font-size:0.95rem;font-weight:700;color:var(--text);}
+  .leader-sub{font-size:0.78rem;color:var(--muted);margin-top:2px;}
+  .leader-rating{margin-left:auto;text-align:right;}
+  .rating-val{font-family:var(--f-display);font-size:1.5rem;font-weight:800;color:var(--text);line-height:1;}
+  .rating-stars{color:#F59E0B;font-size:.75rem;margin-top:2px;}
+  .rating-count{font-size:.72rem;color:var(--muted);margin-top:2px;}
+
+  /* Stats */
+  .hero-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);}
+  .hero-stat{padding:16px;text-align:center;border-right:1px solid var(--border);}
+  .hero-stat:last-child{border-right:none;}
+  .hs-val{font-family:var(--f-display);font-size:1.4rem;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px;}
+  .hs-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+  .hs-icon{font-size:18px;margin-bottom:6px;}
+  .hs-purple{color:var(--purple);}
+  .hs-green{color:var(--green);}
+  .hs-blue{color:var(--blue);}
+  .hs-amber{color:#F59E0B;}
+
+  /* Members */
+  .members-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .member-card{background:var(--off);border:1px solid var(--border);border-radius:11px;padding:14px;display:flex;align-items:flex-start;gap:12px;transition:all .2s;}
+  .member-card:hover{border-color:rgba(124,58,237,0.2);background:rgba(124,58,237,0.03);}
+  .member-av{width:38px;height:38px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,#374151,#6B7280);display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:.85rem;font-weight:800;color:#fff;}
+  .member-name{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:3px;}
+  .member-role{font-size:.75rem;color:var(--purple);font-weight:600;margin-bottom:8px;}
+  .member-skills{display:flex;flex-wrap:wrap;gap:4px;}
+  .skill-chip{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:100px;background:var(--white);border:1px solid var(--border);color:var(--text-2);}
+
+  /* Skills */
+  .skills-wrap{display:flex;flex-wrap:wrap;gap:8px;}
+  .skill-tag{display:inline-flex;align-items:center;font-size:.8rem;font-weight:600;padding:6px 14px;border-radius:100px;background:var(--purple-soft);color:var(--purple);border:1px solid rgba(124,58,237,0.2);transition:all .15s;cursor:default;}
+  .skill-tag:hover{background:var(--purple);color:#fff;}
+
+  /* Reviews */
+  .review-item{padding:16px 0;border-bottom:1px solid var(--border);}
+  .review-item:first-child{padding-top:0;}
+  .review-item:last-child{border-bottom:none;padding-bottom:0;}
+  .review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .review-stars{color:#F59E0B;font-size:13px;}
+  .review-date{font-size:.72rem;color:var(--muted);}
+  .review-text{font-size:.83rem;color:var(--text-2);line-height:1.65;}
+  .review-sub{display:flex;gap:16px;margin-top:8px;}
+  .rsub{font-size:.72rem;color:var(--muted);}
+  .rsub strong{color:var(--text-2);}
+
+  /* Sidebar Book Card */
+  .book-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;position:sticky;top:20px;}
+  .book-head{background:linear-gradient(135deg,var(--navy),#1a1040);padding:20px 24px;position:relative;overflow:hidden;}
+  .book-head::after{content:'';position:absolute;top:-30px;right:-20px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,0.2) 0%,transparent 65%);}
+  .book-rate{font-family:var(--f-display);font-size:2rem;font-weight:800;color:#fff;line-height:1;position:relative;z-index:2;}
+  .book-rate span{font-size:.8rem;color:rgba(255,255,255,0.4);font-weight:400;}
+  .book-rate-label{font-size:.72rem;color:rgba(255,255,255,0.35);margin-top:4px;position:relative;z-index:2;}
+  .book-project-rate{margin-top:8px;font-size:.8rem;color:rgba(255,255,255,0.4);position:relative;z-index:2;}
+  .book-body{padding:20px;}
+
+  .avail-alert{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:9px;font-size:.8rem;font-weight:600;margin-bottom:16px;}
+  .avail-alert.good{background:var(--green-bg);color:var(--green);}
+  .avail-alert.warn{background:var(--amber-bg);color:var(--amber);}
+  .next-slot{background:var(--off);border:1px solid var(--border);border-radius:9px;padding:10px 14px;font-size:.8rem;color:var(--text-2);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+  .next-slot i{color:var(--purple);}
+
+  .btn-book{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--purple);color:#fff;font-family:var(--f-body);font-size:.92rem;font-weight:700;border:none;border-radius:11px;cursor:pointer;transition:all .2s var(--ease);box-shadow:0 4px 14px var(--purple-glow);margin-bottom:10px;text-decoration:none;}
+  .btn-book:hover{background:var(--purple-2);transform:translateY(-1px);color:#fff;box-shadow:0 6px 20px rgba(124,58,237,0.4);}
+  .btn-contact{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;background:var(--white);color:var(--text-2);font-family:var(--f-body);font-size:.88rem;font-weight:600;border:1.5px solid var(--border-2);border-radius:11px;cursor:pointer;transition:all .2s;}
+  .btn-contact:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-soft);}
+  .unavail-badge{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--red-bg);border:1px solid rgba(220,38,38,0.2);border-radius:10px;font-size:.83rem;font-weight:600;color:var(--red);}
+
+  /* Leader sidebar */
+  .leader-bio{font-size:.82rem;color:var(--muted);line-height:1.65;margin-bottom:12px;}
+  .expertise-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;}
+  .expertise-val{font-size:.82rem;color:var(--text-2);}
+  .btn-portfolio{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:var(--purple);background:var(--purple-soft);border:1px solid rgba(124,58,237,0.2);padding:7px 14px;border-radius:8px;text-decoration:none;transition:all .15s;margin-top:12px;}
+  .btn-portfolio:hover{background:var(--purple);color:#fff;}
+
+  /* Availability */
+  .slot-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--green-bg);border:1px solid rgba(5,150,105,0.15);border-radius:8px;font-size:.78rem;color:var(--green);margin-bottom:8px;font-weight:500;}
+  .slot-item:last-child{margin-bottom:0;}
+  .slot-more{font-size:.75rem;color:var(--muted);margin-top:10px;text-align:center;}
+
+  @@media(max-width:1000px){.details-layout{grid-template-columns:1fr;}.book-card{position:static;}}
+  @@media(max-width:640px){.hero-stats{grid-template-columns:repeat(2,1fr);}.members-grid{grid-template-columns:1fr;}}
+</style>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-wrap">
+  <a href="/">Home</a>
+  <i class="bi bi-chevron-right"></i>
+  <a href="@Url.Action("Index")">Team Rooms</a>
+  <i class="bi bi-chevron-right"></i>
+  <span>@Model.TeamRoom.TeamName</span>
+</div>
+
+<div class="details-layout">
+
+  <!-- LEFT -->
+  <div>
+
+    <!-- Hero Card -->
+    <div class="hero-card">
+      <div class="hero-banner">
+        <div class="badge-row">
+          <span class="hbadge hb-specialty">@Model.TeamRoom.Specialty</span>
+          @if (Model.TeamRoom.IsVerified)
+          {
+            <span class="hbadge hb-verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          }
+        </div>
+        <div class="hero-name">@Model.TeamRoom.TeamName</div>
+        <div class="hero-desc">@Model.TeamRoom.Description</div>
+      </div>
+
+      <!-- Leader -->
+      <div class="hero-leader">
+        <div class="leader-av">@Model.TeamRoom.TeamLeader.User.FullName.Substring(0,1)</div>
+        <div>
+          <div class="leader-name">@Model.TeamRoom.TeamLeader.User.FullName</div>
+          <div class="leader-sub">Team Leader · @Model.TeamRoom.TeamLeader.YearsOfExperience years experience</div>
+        </div>
+        @if (Model.TeamRoom.AverageRating.HasValue)
+        {
+          <div class="leader-rating">
+            <div class="rating-val">@Model.TeamRoom.AverageRating.Value.ToString("0.0")</div>
+            <div class="rating-stars">★★★★★</div>
+            <div class="rating-count">@Model.TeamRoom.TotalReviews reviews</div>
+          </div>
+        }
+      </div>
+
+      <!-- Stats -->
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hs-icon hs-purple"><i class="bi bi-people-fill"></i></div>
+          <div class="hs-val">@Model.TeamRoom.TeamSize</div>
+          <div class="hs-label">Members</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hs-icon hs-green"><i class="bi bi-check-circle-fill"></i></div>
+          <div class="hs-val">@Model.CompletedProjectsCount</div>
+          <div class="hs-label">Completed</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hs-icon hs-blue"><i class="bi bi-currency-dollar"></i></div>
+          <div class="hs-val">$@Model.TeamRoom.HourlyRate</div>
+          <div class="hs-label">Per Hour</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hs-icon hs-amber"><i class="bi bi-star-fill"></i></div>
+          <div class="hs-val">@(Model.TeamRoom.AverageRating?.ToString("0.0") ?? "—")</div>
+          <div class="hs-label">Rating</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Members -->
+    <div class="dcard">
+      <div class="dcard-head"><i class="bi bi-people-fill"></i> Team Members</div>
+      <div class="dcard-body">
+        <div class="members-grid">
+          @foreach (var member in Model.TeamMembers)
+          {
+            var ms = System.Text.Json.JsonSerializer.Deserialize<List<string>>(member.Skills ?? "[]");
+            <div class="member-card">
+              <div class="member-av">@member.MemberName.Substring(0,1)</div>
+              <div style="flex:1;min-width:0">
+                <div class="member-name">@member.MemberName</div>
+                <div class="member-role">@member.Role</div>
+                <div class="member-skills">
+                  @foreach (var s in ms.Take(3)) { <span class="skill-chip">@s</span> }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="dcard">
+      <div class="dcard-head"><i class="bi bi-gear-fill"></i> Skills & Technologies</div>
+      <div class="dcard-body">
+        <div class="skills-wrap">
+          @foreach (var skill in skills) { <span class="skill-tag">@skill</span> }
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews -->
+    @if (Model.RecentReviews.Any())
+    {
+      <div class="dcard">
+        <div class="dcard-head"><i class="bi bi-chat-quote-fill"></i> Client Reviews</div>
+        <div class="dcard-body">
+          @foreach (var review in Model.RecentReviews)
+          {
+            <div class="review-item">
+              <div class="review-header">
+                <div class="review-stars">
+                  @for (int i = 0; i < review.Rating; i++) { <text>★</text> }
+                  @for (int i = review.Rating; i < 5; i++) { <span style="color:#E5E7EB">★</span> }
+                </div>
+                <div class="review-date">@review.CreatedAt.ToString("MMM dd, yyyy")</div>
+              </div>
+              <div class="review-text">@review.Comment</div>
+              @if (review.CommunicationRating.HasValue)
+              {
+                <div class="review-sub">
+                  <div class="rsub"><strong>Communication:</strong> @review.CommunicationRating/5</div>
+                  <div class="rsub"><strong>Quality:</strong> @review.QualityRating/5</div>
+                  <div class="rsub"><strong>Timeliness:</strong> @review.TimelinessRating/5</div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div>
+
+    <!-- Book Card -->
+    <div class="book-card">
+      <div class="book-head">
+        <div class="book-rate">$@Model.TeamRoom.HourlyRate<span>/hr</span></div>
+        <div class="book-rate-label">Hourly Rate</div>
+        @if (Model.TeamRoom.ProjectRate.HasValue)
+        {
+          <div class="book-project-rate">Project Rate: <strong style="color:#fff">$@Model.TeamRoom.ProjectRate</strong></div>
+        }
+      </div>
+      <div class="book-body">
+        @if (Model.TeamRoom.IsAvailable)
+        {
+          @if (Model.AvailableSlots.Any())
+          {
+            <div class="avail-alert good">
+              <i class="bi bi-check-circle-fill"></i>
+              @Model.AvailableSlots.Count slot@(Model.AvailableSlots.Count > 1 ? "s" : "") available
+            </div>
+            @if (Model.AvailableSlots.Any())
+            {
+              var nextSlot = Model.AvailableSlots.FirstOrDefault();
+              <div class="next-slot">
+                <i class="bi bi-calendar3"></i>
+                @nextSlot.StartDate.ToString("MMM dd") — @nextSlot.EndDate.ToString("MMM dd, yyyy")
+              </div>
+            }
+            <a href="@Url.Action("Book", new { id = Model.TeamRoom.TeamRoomId })" class="btn-book">
+              <i class="bi bi-calendar-check-fill"></i> Book Now
+            </a>
+            <button class="btn-contact"><i class="bi bi-chat-dots"></i> Contact Team</button>
+          }
+          else
+          {
+            <div class="avail-alert warn">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              No slots — contact for custom scheduling
+            </div>
+            <button class="btn-contact"><i class="bi bi-chat-dots"></i> Contact Team</button>
+          }
+        }
+        else
+        {
+          <div class="unavail-badge"><i class="bi bi-x-circle-fill"></i> Team currently unavailable</div>
+        }
+      </div>
+    </div>
+
+    <!-- Leader Info -->
+    <div class="dcard">
+      <div class="dcard-head"><i class="bi bi-person-badge-fill"></i> About Team Leader</div>
+      <div class="dcard-body">
+        @if (!string.IsNullOrEmpty(Model.TeamRoom.TeamLeader.Bio))
+        {
+          <div class="leader-bio">@Model.TeamRoom.TeamLeader.Bio</div>
+        }
+        @if (!string.IsNullOrEmpty(Model.TeamRoom.TeamLeader.ExpertiseAreas))
+        {
+          <div class="expertise-label">Expertise</div>
+          <div class="expertise-val">@Model.TeamRoom.TeamLeader.ExpertiseAreas</div>
+        }
+        @if (!string.IsNullOrEmpty(Model.TeamRoom.TeamLeader.PortfolioUrl))
+        {
+          <a href="@Model.TeamRoom.TeamLeader.PortfolioUrl" target="_blank" class="btn-portfolio">
+            <i class="bi bi-link-45deg"></i> View Portfolio
+          </a>
+        }
+      </div>
+    </div>
+
+    <!-- Availability -->
+    @if (Model.AvailableSlots.Any())
+    {
+      <div class="dcard">
+        <div class="dcard-head"><i class="bi bi-calendar-week-fill"></i> Availability</div>
+        <div class="dcard-body">
+          @foreach (var slot in Model.AvailableSlots.Take(3))
+          {
+            <div class="slot-item">
+              <i class="bi bi-calendar-check-fill"></i>
+              @slot.StartDate.ToString("MMM dd") — @slot.EndDate.ToString("MMM dd, yyyy")
+            </div>
+          }
+          @if (Model.AvailableSlots.Count > 3)
+          {
+            <div class="slot-more">+@(Model.AvailableSlots.Count - 3) more slots available</div>
+          }
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

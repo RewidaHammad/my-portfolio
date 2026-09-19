@@ -1,0 +1,647 @@
+﻿@model ScalaVerse.ViewModel.Admin_VM.ProjectMonitoringViewModel
+@{
+    ViewData["Title"] = "Project Monitoring";
+}
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --clr-bg:      #0b0c1a;
+    --clr-surface: #11132a;
+    --clr-card:    #14163a;
+    --clr-border:  rgba(139,120,255,.15);
+    --clr-primary: #7c6cf8;
+    --clr-accent:  #a78bfa;
+    --clr-grad-a:  #7c6cf8;
+    --clr-grad-b:  #c084fc;
+    --clr-success: #10b981;
+    --clr-warning: #f59e0b;
+    --clr-danger:  #ef4444;
+    --clr-info:    #38bdf8;
+    --clr-text:    #e2e8f0;
+    --clr-muted:   #94a3b8;
+    --font-main:   'Plus Jakarta Sans', sans-serif;
+    --font-body:   'Inter', sans-serif;
+    --radius:      14px;
+    --radius-sm:   8px;
+    --shadow:      0 4px 24px rgba(0,0,0,.35);
+    --shadow-lg:   0 8px 48px rgba(0,0,0,.5);
+}
+
+.pm-wrap * { box-sizing: border-box; margin: 0; padding: 0; }
+
+.pm-wrap {
+    font-family: var(--font-body);
+    background: var(--clr-bg);
+    color: var(--clr-text);
+    min-height: 100vh;
+    padding: 2rem 1.5rem 4rem;
+}
+
+/* ── Header ── */
+.pm-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-main);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--clr-accent);
+    margin-bottom: .6rem;
+}
+.pm-tag .tag-line {
+    width: 22px; height: 2px;
+    background: linear-gradient(90deg, var(--clr-grad-a), var(--clr-grad-b));
+    border-radius: 2px;
+}
+.pm-title {
+    font-family: var(--font-main);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 20%, var(--clr-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.15;
+}
+.pm-subtitle { color: var(--clr-muted); font-size: .9rem; margin-top: .35rem; }
+.pm-header { margin-bottom: 2rem; }
+
+/* ── Stats ── */
+.pm-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+}
+.pm-stat-card {
+    background: var(--clr-card);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius);
+    padding: 1.35rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.pm-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--clr-grad-a), var(--clr-grad-b));
+    opacity: 0;
+    transition: opacity .2s;
+}
+.pm-stat-card:hover { border-color: var(--clr-primary); transform: translateY(-2px); }
+.pm-stat-card:hover::before { opacity: 1; }
+
+.pm-stat-label {
+    font-size: .7rem; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--clr-muted); margin-bottom: .35rem;
+}
+.pm-stat-val {
+    font-family: var(--font-main);
+    font-size: 1.75rem; font-weight: 800; color: #fff; line-height: 1;
+}
+.pm-stat-icon {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.15rem; flex-shrink: 0;
+}
+.si-purple  { background: rgba(124,108,248,.15); color: var(--clr-primary); }
+.si-success { background: rgba(16,185,129,.15);  color: var(--clr-success); }
+.si-info    { background: rgba(56,189,248,.15);  color: var(--clr-info); }
+.si-danger  { background: rgba(239,68,68,.15);   color: var(--clr-danger); }
+
+/* ── Filter Card ── */
+.pm-filter-card {
+    background: var(--clr-card);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius);
+    margin-bottom: 1.75rem;
+    overflow: hidden;
+}
+.pm-filter-header {
+    background: rgba(124,108,248,.08);
+    border-bottom: 1px solid var(--clr-border);
+    padding: .85rem 1.5rem;
+    display: flex; align-items: center; gap: .5rem;
+    font-family: var(--font-main); font-weight: 700; font-size: .85rem;
+    color: var(--clr-accent);
+}
+.pm-filter-body { padding: 1.25rem 1.5rem; }
+.pm-filter-row { display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
+.pm-filter-group { display: flex; flex-direction: column; gap: .4rem; flex: 1; min-width: 180px; }
+.pm-filter-group label {
+    font-size: .72rem; font-weight: 700;
+    color: var(--clr-muted); text-transform: uppercase; letter-spacing: .06em;
+}
+.pm-select {
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-sm);
+    color: var(--clr-text);
+    padding: .65rem 1rem;
+    font-size: .88rem; font-family: var(--font-body);
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+}
+.pm-select:focus {
+    outline: none; border-color: var(--clr-primary);
+    box-shadow: 0 0 0 3px rgba(124,108,248,.15);
+}
+.pm-select option { background: var(--clr-surface); }
+
+.btn-primary-sv {
+    background: linear-gradient(135deg, var(--clr-grad-a), var(--clr-grad-b));
+    color: #fff; border: none; border-radius: var(--radius-sm);
+    padding: .65rem 1.35rem; font-size: .85rem; font-weight: 700;
+    font-family: var(--font-main); cursor: pointer;
+    display: inline-flex; align-items: center; gap: .4rem;
+    transition: opacity .2s, transform .15s;
+}
+.btn-primary-sv:hover { opacity: .88; transform: translateY(-1px); }
+
+/* ── Table Card ── */
+.pm-table-card {
+    background: var(--clr-card);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+.pm-table-header {
+    background: linear-gradient(135deg, var(--clr-grad-a), var(--clr-grad-b));
+    padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: .5rem;
+    font-family: var(--font-main); font-weight: 700; font-size: .9rem; color: #fff;
+}
+.pm-table-wrap { overflow-x: auto; }
+
+table.pm-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+table.pm-table thead th {
+    background: rgba(255,255,255,.03);
+    border-bottom: 1px solid var(--clr-border);
+    padding: .85rem 1.1rem;
+    font-family: var(--font-main); font-size: .7rem; font-weight: 700;
+    letter-spacing: .07em; text-transform: uppercase;
+    color: var(--clr-muted); white-space: nowrap;
+}
+table.pm-table tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    transition: background .15s;
+}
+table.pm-table tbody tr:hover { background: rgba(124,108,248,.06); }
+table.pm-table tbody tr.row-stuck { background: rgba(239,68,68,.05); }
+table.pm-table tbody tr.row-stuck:hover { background: rgba(239,68,68,.09); }
+table.pm-table tbody td { padding: .95rem 1.1rem; vertical-align: middle; }
+
+/* ── Name cell ── */
+.pm-name-cell { display: flex; align-items: center; gap: .6rem; }
+.pm-dot {
+    width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--clr-grad-a), var(--clr-grad-b));
+}
+.pm-name { font-weight: 700; font-family: var(--font-main); color: #fff; }
+
+/* ── Provider chip ── */
+.pm-provider {
+    display: flex; flex-direction: column; gap: 1px;
+}
+.pm-provider-name { font-weight: 600; color: var(--clr-text); font-size: .85rem; }
+.pm-provider-type {
+    font-size: .7rem; color: var(--clr-muted);
+    font-family: var(--font-main); font-weight: 600;
+    letter-spacing: .04em;
+}
+
+/* ── Badges ── */
+.badge-sv {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .28rem .7rem; border-radius: 20px;
+    font-size: .72rem; font-weight: 700; font-family: var(--font-main);
+    white-space: nowrap; letter-spacing: .03em;
+}
+.badge-active   { background: rgba(16,185,129,.15);  color: var(--clr-success); border: 1px solid rgba(16,185,129,.25); }
+.badge-completed{ background: rgba(56,189,248,.12);  color: var(--clr-info);    border: 1px solid rgba(56,189,248,.2); }
+.badge-stuck    { background: rgba(239,68,68,.15);   color: var(--clr-danger);  border: 1px solid rgba(239,68,68,.25); }
+.badge-default  { background: rgba(148,163,184,.1);  color: var(--clr-muted);   border: 1px solid rgba(148,163,184,.2); }
+
+/* ── Money ── */
+.pm-money    { font-family: var(--font-main); font-weight: 700; color: var(--clr-success); }
+.pm-commission { font-family: var(--font-main); font-weight: 600; color: var(--clr-accent); }
+
+/* ── Progress Bar ── */
+.pm-progress-wrap { display: flex; align-items: center; gap: .6rem; min-width: 110px; }
+.pm-progress-bar {
+    flex: 1; height: 6px; border-radius: 10px;
+    background: rgba(255,255,255,.08); overflow: hidden;
+}
+.pm-progress-fill {
+    height: 100%; border-radius: 10px;
+    background: linear-gradient(90deg, var(--clr-grad-a), var(--clr-grad-b));
+    transition: width .4s ease;
+}
+.pm-progress-fill.warn { background: linear-gradient(90deg, var(--clr-warning), #fbbf24); }
+.pm-progress-fill.done { background: linear-gradient(90deg, var(--clr-success), #34d399); }
+.pm-progress-pct { font-size: .78rem; font-weight: 700; font-family: var(--font-main); color: var(--clr-muted); min-width: 32px; }
+
+/* ── Action Buttons ── */
+.pm-actions { display: flex; gap: .4rem; }
+.btn-act {
+    height: 32px; border-radius: var(--radius-sm);
+    border: 1px solid var(--clr-border);
+    background: transparent; color: var(--clr-muted);
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: .3rem; cursor: pointer; font-size: .78rem; font-weight: 700;
+    font-family: var(--font-main); padding: 0 .75rem;
+    transition: all .15s; text-decoration: none; white-space: nowrap;
+}
+.btn-act-success:hover { background: rgba(16,185,129,.15);  border-color: var(--clr-success); color: var(--clr-success); }
+.btn-act-warning:hover { background: rgba(245,158,11,.15);  border-color: var(--clr-warning); color: var(--clr-warning); }
+
+/* ── Pagination ── */
+.pm-pagination {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--clr-border);
+    display: flex; justify-content: center;
+}
+.pagination-list { display: flex; gap: .35rem; list-style: none; }
+.page-item .page-link {
+    display: flex; align-items: center; justify-content: center;
+    min-width: 36px; height: 36px; border-radius: var(--radius-sm);
+    border: 1px solid var(--clr-border); background: transparent;
+    color: var(--clr-muted); font-size: .82rem; font-weight: 600;
+    font-family: var(--font-main); text-decoration: none;
+    padding: 0 .6rem; transition: all .15s;
+}
+.page-item .page-link:hover { border-color: var(--clr-primary); color: var(--clr-accent); }
+.page-item.active .page-link {
+    background: linear-gradient(135deg, var(--clr-grad-a), var(--clr-grad-b));
+    border-color: transparent; color: #fff;
+}
+.page-item.disabled .page-link { opacity: .35; pointer-events: none; }
+
+/* ── Modal ── */
+.pm-modal-backdrop {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+    z-index: 1050; align-items: center; justify-content: center;
+    padding: 1rem;
+}
+.pm-modal-backdrop.open { display: flex; }
+.pm-modal {
+    background: var(--clr-card);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius);
+    width: 100%; max-width: 480px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: modalIn .2s ease;
+}
+@@keyframes modalIn {
+    from { opacity: 0; transform: translateY(-12px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0)     scale(1); }
+}
+.pm-modal-header {
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid var(--clr-border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(239,68,68,.08);
+}
+.pm-modal-title {
+    font-family: var(--font-main); font-weight: 700; font-size: .95rem;
+    color: var(--clr-danger); display: flex; align-items: center; gap: .5rem;
+}
+.pm-modal-close {
+    background: transparent; border: none; color: var(--clr-muted);
+    font-size: 1.2rem; cursor: pointer; line-height: 1;
+    transition: color .15s; padding: .2rem;
+}
+.pm-modal-close:hover { color: #fff; }
+.pm-modal-body { padding: 1.5rem; }
+.pm-modal-label {
+    font-size: .75rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: var(--clr-muted); margin-bottom: .5rem;
+}
+.pm-textarea {
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-sm);
+    color: var(--clr-text); padding: .75rem 1rem;
+    font-size: .88rem; font-family: var(--font-body);
+    width: 100%; resize: vertical; min-height: 100px;
+    transition: border-color .2s, box-shadow .2s;
+}
+.pm-textarea:focus {
+    outline: none; border-color: var(--clr-danger);
+    box-shadow: 0 0 0 3px rgba(239,68,68,.12);
+}
+.pm-modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--clr-border);
+    display: flex; justify-content: flex-end; gap: .6rem;
+}
+.btn-ghost-sv {
+    background: transparent; border: 1px solid var(--clr-border);
+    color: var(--clr-muted); border-radius: var(--radius-sm);
+    padding: .6rem 1.1rem; font-size: .85rem; font-weight: 600;
+    font-family: var(--font-main); cursor: pointer;
+    transition: border-color .2s, color .2s;
+}
+.btn-ghost-sv:hover { border-color: var(--clr-primary); color: var(--clr-accent); }
+.btn-danger-sv {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: #fff; border: none; border-radius: var(--radius-sm);
+    padding: .6rem 1.25rem; font-size: .85rem; font-weight: 700;
+    font-family: var(--font-main); cursor: pointer;
+    display: inline-flex; align-items: center; gap: .4rem;
+    transition: opacity .2s;
+}
+.btn-danger-sv:hover { opacity: .88; }
+
+/* ── Responsive ── */
+@@media (max-width: 1024px) { .pm-stats { grid-template-columns: repeat(2, 1fr); } }
+@@media (max-width: 600px) {
+    .pm-wrap { padding: 1.25rem 1rem 3rem; }
+    .pm-stats { grid-template-columns: 1fr; }
+    .pm-filter-row { flex-direction: column; }
+    table.pm-table thead th,
+    table.pm-table tbody td { padding: .65rem .75rem; font-size: .8rem; }
+    .pm-title { font-size: 1.5rem; }
+}
+</style>
+
+<div class="pm-wrap">
+
+    <!-- Header -->
+    <div class="pm-header">
+        <div class="pm-tag"><div class="tag-line"></div> Admin Panel</div>
+        <h1 class="pm-title">Project Monitoring</h1>
+        <p class="pm-subtitle">Track, filter, and manage all platform projects</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="pm-stats">
+        <div class="pm-stat-card">
+            <div>
+                <div class="pm-stat-label">Total Projects</div>
+                <div class="pm-stat-val">@Model.TotalProjects</div>
+            </div>
+            <div class="pm-stat-icon si-purple"><i class="bi bi-folder2-open"></i></div>
+        </div>
+        <div class="pm-stat-card">
+            <div>
+                <div class="pm-stat-label">Active</div>
+                <div class="pm-stat-val">@Model.ActiveProjects</div>
+            </div>
+            <div class="pm-stat-icon si-success"><i class="bi bi-lightning-charge-fill"></i></div>
+        </div>
+        <div class="pm-stat-card">
+            <div>
+                <div class="pm-stat-label">Completed</div>
+                <div class="pm-stat-val">@Model.CompletedProjects</div>
+            </div>
+            <div class="pm-stat-icon si-info"><i class="bi bi-check-circle-fill"></i></div>
+        </div>
+        <div class="pm-stat-card">
+            <div>
+                <div class="pm-stat-label">Stuck</div>
+                <div class="pm-stat-val">@Model.StuckProjects</div>
+            </div>
+            <div class="pm-stat-icon si-danger"><i class="bi bi-exclamation-triangle-fill"></i></div>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="pm-filter-card">
+        <div class="pm-filter-header">
+            <i class="bi bi-funnel-fill"></i> Filter Projects
+        </div>
+        <div class="pm-filter-body">
+            <form method="get">
+                <div class="pm-filter-row">
+                    <div class="pm-filter-group" style="max-width:260px">
+                        <label><i class="bi bi-tag"></i> &nbsp;Status</label>
+                        <select name="status" class="pm-select">
+                            <option value="All"       selected="@(Model.StatusFilter == "All")">All Status</option>
+                            <option value="Active"    selected="@(Model.StatusFilter == "Active")">Active</option>
+                            <option value="Completed" selected="@(Model.StatusFilter == "Completed")">Completed</option>
+                            <option value="Stuck"     selected="@(Model.StatusFilter == "Stuck")">Stuck</option>
+                        </select>
+                    </div>
+                    <div style="display:flex;align-items:flex-end">
+                        <button type="submit" class="btn-primary-sv">
+                            <i class="bi bi-search"></i> Apply Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="pm-table-card">
+        <div class="pm-table-header">
+            <i class="bi bi-kanban-fill"></i> Projects List
+        </div>
+        <div class="pm-table-wrap">
+            <table class="pm-table">
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Client</th>
+                        <th>Provider</th>
+                        <th>Status</th>
+                        <th>Budget</th>
+                        <th>Commission</th>
+                        <th>Progress</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var project in Model.Projects)
+                    {
+                        <tr class="@(project.IsStuck ? "row-stuck" : "")">
+                            <td>
+                                <div class="pm-name-cell">
+                                    <div class="pm-dot"></div>
+                                    <span class="pm-name">@project.ProjectName</span>
+                                </div>
+                            </td>
+                            <td style="color:var(--clr-muted); font-size:.83rem">@project.ClientName</td>
+                            <td>
+                                <div class="pm-provider">
+                                    <span class="pm-provider-name">@project.ProviderName</span>
+                                    <span class="pm-provider-type">@project.ProviderType</span>
+                                </div>
+                            </td>
+                            <td>
+                                @{
+                                    string badgeCls = project.Status switch {
+                                        "Active"    => "badge-active",
+                                        "Completed" => "badge-completed",
+                                        "Stuck"     => "badge-stuck",
+                                        _           => "badge-default"
+                                    };
+                                    string badgeIcon = project.Status switch {
+                                        "Active"    => "bi-lightning-charge-fill",
+                                        "Completed" => "bi-check-circle-fill",
+                                        "Stuck"     => "bi-exclamation-triangle-fill",
+                                        _           => "bi-dash-circle"
+                                    };
+                                }
+                                <span class="badge-sv @badgeCls">
+                                    <i class="bi @badgeIcon"></i> @project.Status
+                                </span>
+                            </td>
+                            <td><span class="pm-money">$@project.Budget.ToString("N2")</span></td>
+                            <td><span class="pm-commission">$@project.PlatformEarnings.ToString("N2")</span></td>
+                            <td>
+                                @{
+                                    string fillCls = project.ProgressPercentage >= 100 ? "done"
+                                                   : project.ProgressPercentage < 30   ? "warn" : "";
+                                }
+                                <div class="pm-progress-wrap">
+                                    <div class="pm-progress-bar">
+                                        <div class="pm-progress-fill @fillCls" style="width:@(project.ProgressPercentage)%"></div>
+                                    </div>
+                                    <span class="pm-progress-pct">@project.ProgressPercentage%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="pm-actions">
+                                    @if (project.IsStuck)
+                                    {
+                                        <form method="post" action="@Url.Action("ToggleStuckStatus")" style="display:inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@project.ProjectId" />
+                                            <input type="hidden" name="isStuck" value="false" />
+                                            <button type="submit" class="btn-act btn-act-success">
+                                                <i class="bi bi-check-circle"></i> Unmark
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn-act btn-act-warning"
+                                                onclick="openModal('modal-@project.ProjectId')">
+                                            <i class="bi bi-exclamation-triangle"></i> Mark Stuck
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <div class="pm-pagination">
+                <ul class="pagination-list">
+                    <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                        <a class="page-link"
+                           href="@Url.Action("Projects", new { page = Model.CurrentPage - 1, status = Model.StatusFilter })">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link"
+                               href="@Url.Action("Projects", new { page = i, status = Model.StatusFilter })">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link"
+                           href="@Url.Action("Projects", new { page = Model.CurrentPage + 1, status = Model.StatusFilter })">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        }
+    </div>
+
+
+    @foreach (var project in Model.Projects)
+    {
+        @if (!project.IsStuck)
+        {
+            <div class="pm-modal-backdrop" id="modal-@project.ProjectId" onclick="closeModal('modal-@project.ProjectId')">
+                <div class="pm-modal" onclick="arguments[0].stopPropagation()">
+                    <div class="pm-modal-header">
+                        <div class="pm-modal-title">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            Mark Project as Stuck
+                        </div>
+                        <button class="pm-modal-close" onclick="closeModal('modal-@project.ProjectId')">&times;</button>
+                    </div>
+                    <form method="post" action="@Url.Action("ToggleStuckStatus")">
+                        @Html.AntiForgeryToken()
+                        <div class="pm-modal-body">
+                            <p style="color:var(--clr-muted); font-size:.85rem; margin-bottom:1rem">
+                                You're marking <strong style="color:#fff">@project.ProjectName</strong> as stuck. Please provide a reason.
+                            </p>
+                            <input type="hidden" name="id" value="@project.ProjectId" />
+                            <input type="hidden" name="isStuck" value="true" />
+                            <div class="pm-modal-label">Reason *</div>
+                            <textarea name="reason" class="pm-textarea"
+                                      placeholder="Describe why this project is stuck…" required></textarea>
+                        </div>
+                        <div class="pm-modal-footer">
+                            <button type="button" class="btn-ghost-sv"
+                                    onclick="closeModal('modal-@project.ProjectId')">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn-danger-sv">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Mark as Stuck
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+
+</div>
+
+<script>
+function openModal(id) {
+    var el = document.getElementById(id);
+    if (el) {
+        el.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeModal(id) {
+    var el = document.getElementById(id);
+    if (el) {
+        el.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+}
+
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.pm-modal-backdrop.open').forEach(function(bd) {
+            closeModal(bd.id);
+        });
+    }
+});
+</script>

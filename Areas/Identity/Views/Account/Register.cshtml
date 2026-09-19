@@ -1,0 +1,585 @@
+﻿@using ScalaVerse.ViewModel.Identity_VM
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Create Account";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Account — ScaleVerse</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --navy: #0A0E1A;
+            --purple: #7C3AED;
+            --purple-2: #6D28D9;
+            --purple-3: #8B5CF6;
+            --purple-4: #A78BFA;
+            --f-display: 'Plus Jakarta Sans', sans-serif;
+            --f-body: 'Inter', sans-serif;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        html, body {
+            font-family: var(--f-body);
+            -webkit-font-smoothing: antialiased;
+            background: var(--navy);
+        }
+
+        .page {
+            min-height: 100vh;
+            background: var(--navy);
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .page::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                pointer-events: none;
+                background-image: linear-gradient(rgba(124,58,237,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.055) 1px, transparent 1px);
+                background-size: 48px 48px;
+            }
+
+            .page::after {
+                content: '';
+                position: fixed;
+                top: -220px;
+                right: -180px;
+                z-index: 0;
+                pointer-events: none;
+                width: 640px;
+                height: 640px;
+                border-radius: 50%;
+                background: radial-gradient(ellipse, rgba(124,58,237,0.16) 0%, transparent 65%);
+            }
+
+        .page-glow2 {
+            position: fixed;
+            bottom: -180px;
+            left: -180px;
+            z-index: 0;
+            pointer-events: none;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(124,58,237,0.08) 0%, transparent 65%);
+        }
+
+        /* NAV */
+        .auth-nav {
+            position: relative;
+            z-index: 10;
+            padding: 18px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(124,58,237,0.1);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+            .nav-logo img {
+                height: 90px;
+                width: auto;
+                object-fit: contain;
+                display: block;
+            }
+
+        .nav-badge {
+            margin-left: 10px;
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--purple-4);
+            border: 1px solid rgba(167,139,250,0.3);
+            border-radius: 20px;
+            padding: 2px 8px;
+            background: rgba(124,58,237,0.08);
+        }
+
+        .nav-right {
+            font-size: .83rem;
+            color: rgba(255,255,255,.38);
+        }
+
+            .nav-right a {
+                color: var(--purple-4);
+                font-weight: 600;
+                text-decoration: none;
+                transition: color .2s;
+            }
+
+                .nav-right a:hover {
+                    color: #fff;
+                }
+
+        /* MAIN */
+        .auth-main {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 32px 24px 40px;
+        }
+
+        /* CARD */
+        .auth-card {
+            width: 100%;
+            max-width: 480px;
+            background: transparent;
+            border-radius: 20px;
+            border: 1px solid rgba(124,58,237,0.18);
+            overflow: hidden;
+            animation: cardUp 0.65s var(--ease) both;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        @@keyframes cardUp {
+            from {
+                opacity: 0;
+                transform: translateY(28px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-accent {
+            height: 3px;
+            background: linear-gradient(90deg, var(--purple) 0%, var(--purple-3) 55%, #C4B5FD 100%);
+        }
+
+        .card-body {
+            padding: 32px 36px 28px;
+        }
+
+        .card-header-wrap {
+            margin-bottom: 26px;
+        }
+
+        .card-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--purple-4);
+            margin-bottom: 10px;
+        }
+
+            .card-eyebrow::before {
+                content: '';
+                width: 16px;
+                height: 1.5px;
+                background: var(--purple-4);
+                border-radius: 2px;
+            }
+
+        .card-title {
+            font-family: var(--f-display);
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -.03em;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .card-sub {
+            font-size: .83rem;
+            color: rgba(255,255,255,.38);
+            line-height: 1.5;
+        }
+
+        /* FIELDS */
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: .79rem;
+            font-weight: 600;
+            color: rgba(255,255,255,.72);
+            margin-bottom: 5px;
+        }
+
+            .field-label .opt {
+                font-weight: 400;
+                color: rgba(255,255,255,.3);
+            }
+
+        .field-input, .field-select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid rgba(124,58,237,0.18);
+            border-radius: 10px;
+            font-family: var(--f-body);
+            font-size: .88rem;
+            color: #F9FAFB;
+            background: rgba(124,58,237,0.06);
+            outline: none;
+            transition: all .18s;
+        }
+
+            .field-input:focus, .field-select:focus {
+                border-color: var(--purple);
+                background: rgba(124,58,237,0.1);
+                box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+            }
+
+            .field-input::placeholder {
+                color: rgba(255,255,255,.18);
+            }
+
+        .field-select {
+            cursor: pointer;
+            appearance: none;
+            padding-right: 32px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-color: rgba(124,58,237,0.06);
+        }
+
+            .field-select option {
+                background: #0F1221;
+                color: #F9FAFB;
+            }
+
+        .field-error {
+            font-size: .73rem;
+            color: #FCA5A5;
+            margin-top: 3px;
+            display: block;
+        }
+
+        .field-hint {
+            font-size: .7rem;
+            color: rgba(255,255,255,.28);
+            margin-top: 4px;
+        }
+
+        .field-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .val-summary {
+            background: rgba(220,38,38,0.08);
+            border: 1px solid rgba(220,38,38,0.25);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: .8rem;
+            color: #FCA5A5;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+            .val-summary ul {
+                margin: 0;
+                padding-left: 14px;
+            }
+
+        .terms-wrap {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 14px 0 20px;
+        }
+
+            .terms-wrap input[type="checkbox"] {
+                width: 15px;
+                height: 15px;
+                margin-top: 2px;
+                accent-color: var(--purple);
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+
+        .terms-text {
+            font-size: .79rem;
+            color: rgba(255,255,255,.35);
+            line-height: 1.5;
+        }
+
+            .terms-text a {
+                color: var(--purple-4);
+                text-decoration: none;
+                font-weight: 600;
+            }
+
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: var(--purple);
+            color: #fff;
+            font-family: var(--f-body);
+            font-size: .92rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 11px;
+            cursor: pointer;
+            transition: all .25s var(--ease);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+            letter-spacing: .01em;
+        }
+
+            .btn-submit:hover {
+                background: var(--purple-2);
+                transform: translateY(-1px);
+                box-shadow: 0 8px 28px rgba(124,58,237,0.5);
+            }
+
+        .btn-arrow {
+            font-size: 1rem;
+            transition: transform .2s;
+        }
+
+        .btn-submit:hover .btn-arrow {
+            transform: translateX(3px);
+        }
+
+        .auth-switch {
+            text-align: center;
+            font-size: .83rem;
+            color: rgba(255,255,255,.3);
+        }
+
+            .auth-switch a {
+                font-weight: 700;
+                color: var(--purple-4);
+                text-decoration: none;
+                transition: color .2s;
+            }
+
+                .auth-switch a:hover {
+                    color: #fff;
+                }
+
+        /* FOOTER */
+        .auth-footer {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            padding: 20px;
+            font-size: .71rem;
+            color: rgba(255,255,255,.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+            .auth-footer a {
+                color: rgba(255,255,255,.2);
+                text-decoration: none;
+                transition: color .2s;
+            }
+
+                .auth-footer a:hover {
+                    color: rgba(255,255,255,.5);
+                }
+
+        .footer-dot {
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.1);
+        }
+
+        @@media (max-width: 520px) {
+            .auth-nav {
+                padding: 16px 20px;
+            }
+
+            .card-body {
+                padding: 24px 20px 20px;
+            }
+
+            .field-row-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+        }
+
+        .nav-cta-outline {
+            display: inline-flex;
+            align-items: center;
+            padding: 9px 20px;
+            background: transparent;
+            color: var(--purple-4) !important;
+            font-size: .83rem;
+            font-weight: 700;
+            border-radius: 10px;
+            border: 1.5px solid rgba(124,58,237,0.45);
+            text-decoration: none;
+            letter-spacing: .01em;
+            box-shadow: 0 0 0 0 rgba(124,58,237,0.4);
+            animation: navPulse 2.5s ease-in-out infinite;
+            transition: all .2s;
+        }
+
+            .nav-cta-outline:hover {
+                background: rgba(124,58,237,0.1);
+                border-color: var(--purple);
+                color: #fff !important;
+                transform: translateY(-1px);
+                animation: none;
+            }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page-glow2"></div>
+
+        <nav class="auth-nav">
+            <a href="/" class="nav-logo">
+                <img src="@Url.Content("~/uploads/companies/logos/scalaverselogo.png")" alt="ScaleVerse" />
+               
+            </a>
+            <div class="nav-right">
+                <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="nav-cta-outline">
+                    Sign In
+                </a>
+            </div>
+        </nav>
+
+        <main class="auth-main">
+            <div class="auth-card">
+                <div class="card-accent"></div>
+                <div class="card-body">
+
+                    <div class="card-header-wrap">
+                        <div class="card-eyebrow">Get started</div>
+                        <div class="card-title">Create your account</div>
+                        <div class="card-sub">Join thousands of businesses scaling smarter with ScaleVerse</div>
+                    </div>
+
+                    <form asp-action="Register" asp-controller="Account" asp-area="Identity" method="post">
+
+                        <div asp-validation-summary="ModelOnly" class="val-summary"></div>
+
+                        <div class="field-row-2">
+                            <div class="field">
+                                <label asp-for="FullName" class="field-label">Full Name</label>
+                                <input asp-for="FullName" class="field-input" placeholder="Your full name" />
+                                <span asp-validation-for="FullName" class="field-error"></span>
+                            </div>
+                            <div class="field">
+                                <label asp-for="PhoneNumber" class="field-label">Phone <span class="opt">(optional)</span></label>
+                                <input asp-for="PhoneNumber" class="field-input" placeholder="+20 1xx xxx xxxx" />
+                                <span asp-validation-for="PhoneNumber" class="field-error"></span>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label asp-for="Email" class="field-label">Email Address</label>
+                            <input asp-for="Email" type="email" class="field-input" placeholder="name@company.com" />
+                            <span asp-validation-for="Email" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label asp-for="UserType" class="field-label">Register As</label>
+                            <select asp-for="UserType" class="field-select">
+                                <option value="">— Select your role —</option>
+                                <option value="Client">Client — Hire teams & consultants</option>
+                                <option value="TeamLeader">Team Leader — Offer team services</option>
+                                <option value="Consultant">Consultant — Provide consultancy</option>
+                                <option value="CompanyManager">Company Manager — Manage company</option>
+                            </select>
+                            <span asp-validation-for="UserType" class="field-error"></span>
+                        </div>
+
+                        <div class="field-row-2">
+                            <div class="field">
+                                <label asp-for="Password" class="field-label">Password</label>
+                                <input asp-for="Password" type="password" class="field-input" placeholder="Min. 8 characters" />
+                                <span asp-validation-for="Password" class="field-error"></span>
+                            </div>
+                            <div class="field">
+                                <label asp-for="ConfirmPassword" class="field-label">Confirm Password</label>
+                                <input asp-for="ConfirmPassword" type="password" class="field-input" placeholder="Re-enter" />
+                                <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+                            </div>
+                        </div>
+                        <div class="field-hint" style="margin-top:-8px;margin-bottom:2px;">Must include uppercase, number & special character</div>
+
+                        <div class="terms-wrap">
+                            <input type="checkbox" id="termsCheck" required />
+                            <label class="terms-text" for="termsCheck">
+                                I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            Create Account <span class="btn-arrow">→</span>
+                        </button>
+
+                        <div class="auth-switch">
+                            Already have an account?
+                            <a asp-action="Login" asp-controller="Account" asp-area="Identity">Sign in</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer class="auth-footer">
+            <span>© 2026 ScaleVerse. All rights reserved.</span>
+            <span class="footer-dot"></span>
+            <a href="#">Privacy</a>
+            <span class="footer-dot"></span>
+            <a href="#">Terms</a>
+            <span class="footer-dot"></span>
+            <a href="#">Support</a>
+        </footer>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const vs = document.querySelector('.val-summary');
+        if (vs && vs.querySelector('li')) vs.style.display = 'block';
+    </script>
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>
